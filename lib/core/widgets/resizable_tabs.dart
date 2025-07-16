@@ -104,6 +104,7 @@ class _ResizableTabsState extends State<ResizableTabs> {
             for (int i = 0; i < widget.children.length; i++) ...[
               if (i != 0)
                 GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onHorizontalDragUpdate: isHorizontal
                       ? (details) => _updateSize(i - 1, details.primaryDelta)
                       : null,

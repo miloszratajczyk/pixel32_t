@@ -15,10 +15,17 @@ class LineTool extends Tool {
   String get name => "Line";
 
   @override
+  String get icon => "assets/icons/pecil.svg";
+
+  @override
   Widget buildSettingsView() => LineToolSettingsView(lineTool: this);
 
   @override
-  void onPointerDown(PointerEvent event, ClothRepository repository) {
+  void onPointerDown(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final point = event.localPosition.toIntPoint();
 
     eventButtons = event.buttons;
@@ -36,7 +43,11 @@ class LineTool extends Tool {
   }
 
   @override
-  void onPointerMove(PointerEvent event, ClothRepository repository) {
+  void onPointerMove(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final point = event.localPosition.toIntPoint();
 
     if (startPoint == null) {
@@ -57,7 +68,11 @@ class LineTool extends Tool {
   }
 
   @override
-  void onPointerUp(PointerEvent event, ClothRepository repository) {
+  void onPointerUp(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final point = event.localPosition.toIntPoint();
 
     if (startPoint == null) {
@@ -80,5 +95,9 @@ class LineTool extends Tool {
   }
 
   @override
-  void onPointerSignal(PointerEvent event, ClothRepository repository) {}
+  void onPointerSignal(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 }

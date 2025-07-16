@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
+
 extension PointIntToOffset on Point<int> {
   Offset toOffset() => Offset(x.toDouble(), y.toDouble());
 }

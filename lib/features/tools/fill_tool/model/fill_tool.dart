@@ -15,10 +15,17 @@ class FillTool extends Tool {
   String get name => "Fill";
 
   @override
+  String get icon => "assets/icons/fill.svg";
+
+  @override
   Widget buildSettingsView() => FillToolSettingsView(fillTool: this);
 
   @override
-  void onPointerDown(PointerEvent event, ClothRepository repository) {
+  void onPointerDown(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final startPoint = event.localPosition.toIntPoint();
 
     final targetColor = repository.getPixel(startPoint);
@@ -69,11 +76,23 @@ class FillTool extends Tool {
   }
 
   @override
-  void onPointerMove(PointerEvent event, ClothRepository repository) {}
+  void onPointerMove(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 
   @override
-  void onPointerUp(PointerEvent event, ClothRepository repository) {}
+  void onPointerUp(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 
   @override
-  void onPointerSignal(PointerEvent event, ClothRepository repository) {}
+  void onPointerSignal(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 }

@@ -3,7 +3,7 @@ import 'package:pixel32_t/core/style/app_colors.dart';
 import 'package:pixel32_t/core/widgets/bs_button/bs_button.dart';
 import 'package:pixel32_t/core/widgets/resizable_tabs.dart';
 import 'package:pixel32_t/features/cloth/presentation/cloth.dart';
-import 'package:pixel32_t/features/panels/color_panel/color_panel.dart';
+import 'package:pixel32_t/features/panels/colors_panel/colors_panel.dart';
 import 'package:pixel32_t/features/editor/presentation/canvas_editor.dart';
 import 'package:pixel32_t/features/panels/editor_panel/editor_panel.dart';
 import 'package:pixel32_t/features/panels/layers_panel/layers_panel.dart';
@@ -14,7 +14,7 @@ class HomeScreenView extends StatelessWidget {
   const HomeScreenView({super.key});
 
   Widget get _tabDivider {
-    return Container(color: AppColors.primary.withAlpha(128));
+    return Container(color: AppColors.foreground);
   }
 
   @override
@@ -27,14 +27,17 @@ class HomeScreenView extends StatelessWidget {
             child: ResizableTabs(
               dividerSize: 16,
               tabFlexes: [1, 4, 1],
-              divider: _tabDivider,
+              divider: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6),
+                child: Container(color: AppColors.foreground),
+              ),
               children: [
                 ResizableTabs(
                   axis: Axis.vertical,
                   dividerSize: 16,
                   tabFlexes: [2, 1],
                   divider: _tabDivider,
-                  children: [ToolsPanel(), ColorPanel()],
+                  children: [ToolsPanel(), ColorsPanel()],
                 ),
                 EditorPanel(),
                 ResizableTabs(

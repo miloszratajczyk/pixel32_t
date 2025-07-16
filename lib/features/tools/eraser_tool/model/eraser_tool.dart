@@ -10,13 +10,24 @@ class EraserTool extends Tool {
   String get name => "Eraser";
 
   @override
+  String get icon => "assets/icons/eraser.svg";
+
+  @override
   Widget buildSettingsView() => EraserToolSettingsView(eraserTool: this);
 
   @override
-  void onPointerDown(PointerEvent event, ClothRepository repository) {}
+  void onPointerDown(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 
   @override
-  void onPointerMove(PointerEvent event, ClothRepository repository) {
+  void onPointerMove(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final centerX = event.localPosition.dx.toInt();
     final centerY = event.localPosition.dy.toInt();
     repository.erasePixel(Point<int>(centerX, centerY));
@@ -29,8 +40,16 @@ class EraserTool extends Tool {
   }
 
   @override
-  void onPointerUp(PointerEvent event, ClothRepository repository) {}
+  void onPointerUp(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 
   @override
-  void onPointerSignal(PointerEvent event, ClothRepository repository) {}
+  void onPointerSignal(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 }

@@ -13,6 +13,7 @@ import 'package:pixel32_t/features/tools/fill_tool/model/fill_tool.dart';
 import 'package:pixel32_t/features/tools/line_tool/model/line_tool.dart';
 import 'package:pixel32_t/features/tools/pencil_tool/model/pencil_tool.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
+import 'package:pixel32_t/features/tools/zoom_tool/model/zoom_tool.dart';
 
 class ClothRepository {
   final _imageController = StreamController<ui.Image>.broadcast();
@@ -63,6 +64,7 @@ class ClothRepository {
     EraserTool(),
     LineTool(),
     FillTool(),
+    ZoomTool(),
   ];
   late Tool activeTool = tools.first;
 
@@ -187,48 +189,6 @@ class ClothRepository {
     final composedImage = await picture.toImage(width, height);
     return composedImage;
   }
-
-  // Future<ui.Image> generateImageFromCustomPainter({
-  //   required CustomPainter painter,
-  //   required int width,
-  //   required int height,
-  // }) async {
-  //   final recorder = ui.PictureRecorder();
-  //   final canvas = Canvas(recorder);
-  //   final size = Size(width.toDouble(), height.toDouble());
-
-  //   // Paint using your CustomPainter
-  //   painter.paint(canvas, size);
-
-  //   final picture = recorder.endRecording();
-  //   final image = await picture.toImage(width, height);
-  //   return image;
-  // }
-
-  // Future<ui.Image> blendLayersWithCanvas({
-  //   required List<ui.Image> layers,
-  //   required int width,
-  //   required int height,
-  //   BlendMode blendMode = BlendMode.srcOver,
-  // }) async {
-  //   final recorder = ui.PictureRecorder();
-  //   final canvas = ui.Canvas(recorder);
-  //   final paint = ui.Paint()..blendMode = blendMode;
-
-  //   // Optional: fill with transparent background
-  //   canvas.drawRect(
-  //     Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
-  //     Paint()..color = const Color(0x00000000),
-  //   );
-
-  //   for (final image in layers) {
-  //     canvas.drawImage(image, Offset.zero, paint);
-  //   }
-
-  //   final picture = recorder.endRecording();
-  //   final composedImage = await picture.toImage(width, height);
-  //   return composedImage;
-  // }
 
   void dispose() {
     _scheduler.dispose();

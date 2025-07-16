@@ -14,10 +14,17 @@ class PencilTool extends Tool {
   String get name => "Pencil";
 
   @override
+  String get icon => "assets/icons/pencil.svg";
+
+  @override
   Widget buildSettingsView() => PencilToolSettingsView(pencilTool: this);
 
   @override
-  void onPointerDown(PointerEvent event, ClothRepository repository) {
+  void onPointerDown(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final point = event.localPosition.toIntPoint();
 
     if (event.buttons == kPrimaryButton) {
@@ -31,7 +38,11 @@ class PencilTool extends Tool {
   }
 
   @override
-  void onPointerMove(PointerEvent event, ClothRepository repository) {
+  void onPointerMove(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     final point = event.localPosition.toIntPoint();
 
     if (lastPosition == null) {
@@ -53,10 +64,18 @@ class PencilTool extends Tool {
   }
 
   @override
-  void onPointerUp(PointerEvent event, ClothRepository repository) {
+  void onPointerUp(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {
     lastPosition = null;
   }
 
   @override
-  void onPointerSignal(PointerEvent event, ClothRepository repository) {}
+  void onPointerSignal(
+    PointerEvent event,
+    ClothRepository repository,
+    BuildContext context,
+  ) {}
 }
