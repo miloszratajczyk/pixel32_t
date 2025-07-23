@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
 import 'package:pixel32_t/features/tools/brush_tool/presentation/brush_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
@@ -17,39 +18,25 @@ class BrushTool extends Tool {
   Widget buildSettingsView() => BrushToolSettingsView(brushTool: this);
 
   @override
-  void onPointerDown(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerDown(PointerEvent event, BuildContext context) {}
 
   @override
-  void onPointerMove(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {
+  void onPointerMove(PointerEvent event, BuildContext context) {
+    final repo = context.read<ClothRepository>();
     final point = event.localPosition.toIntPoint();
-    repository.setPixel(point);
-    repository.setPixel(point - Point<int>(1, 0));
-    repository.setPixel(point - Point<int>(0, 1));
-    repository.setPixel(point + Point<int>(1, 0));
-    repository.setPixel(point + Point<int>(0, 1));
+    repo.setPixel(point);
+    repo.setPixel(point - Point<int>(1, 0));
+    repo.setPixel(point - Point<int>(0, 1));
+    repo.setPixel(point + Point<int>(1, 0));
+    repo.setPixel(point + Point<int>(0, 1));
 
-    repository.markLayerForRedraw();
+    repo.markLayerForRedraw();
+    repo.requestRedraw();
   }
 
   @override
-  void onPointerUp(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerUp(PointerEvent event, BuildContext context) {}
 
   @override
-  void onPointerSignal(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerSignal(PointerEvent event, BuildContext context) {}
 }

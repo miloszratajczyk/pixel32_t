@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pixel32_t/core/style/app_colors.dart';
-import 'package:pixel32_t/core/widgets/bs_button/bs_button.dart';
 import 'package:pixel32_t/core/widgets/resizable_tabs.dart';
-import 'package:pixel32_t/features/cloth/presentation/cloth.dart';
 import 'package:pixel32_t/features/panels/colors_panel/colors_panel.dart';
-import 'package:pixel32_t/features/editor/presentation/canvas_editor.dart';
 import 'package:pixel32_t/features/panels/editor_panel/editor_panel.dart';
 import 'package:pixel32_t/features/panels/layers_panel/layers_panel.dart';
 import 'package:pixel32_t/features/panels/preview_panel/preview_panel.dart';

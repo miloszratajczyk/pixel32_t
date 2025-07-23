@@ -4,6 +4,9 @@ import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
 import 'package:pixel32_t/features/screens/home_screen/presentation/home_screen_view.dart';
+import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
+import 'package:pixel32_t/features/tools/core/application/tool_repository.dart';
+import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,10 +14,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final clothRepository = context.read<ClothRepository>();
+    final toolRepository = context.read<ToolRepository>();
     return MultiBlocProvider(
       providers: [
-        BlocProvider<EditorPanelCubit>(create: (_) => EditorPanelCubit()),
         BlocProvider<ClothCubit>(create: (_) => ClothCubit(clothRepository)),
+        BlocProvider<ToolCubit>(create: (_) => ToolCubit(toolRepository)),
+        BlocProvider<EditorPanelCubit>(create: (_) => EditorPanelCubit()),
+        BlocProvider<SelectionCubit>(
+          create: (_) => SelectionCubit(clothRepository),
+        ),
       ],
       child: HomeScreenView(),
     );

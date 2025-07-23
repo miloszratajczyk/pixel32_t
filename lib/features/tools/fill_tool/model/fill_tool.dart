@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/fill_tool/presentation/fill_tool_settings_view.dart';
@@ -21,18 +22,16 @@ class FillTool extends Tool {
   Widget buildSettingsView() => FillToolSettingsView(fillTool: this);
 
   @override
-  void onPointerDown(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {
+  void onPointerDown(PointerEvent event, BuildContext context) {
+    final repo = context.read<ClothRepository>();
+
     final startPoint = event.localPosition.toIntPoint();
 
-    final targetColor = repository.getPixel(startPoint);
+    final targetColor = repo.getPixel(startPoint);
 
     final fillColor = event.buttons == kPrimaryButton
-        ? repository.primaryColor
-        : repository.secondaryColor;
+        ? repo.primaryColor
+        : repo.secondaryColor;
 
     if (targetColor == fillColor) return;
 
@@ -46,13 +45,13 @@ class FillTool extends Tool {
       if (visited.contains(point)) continue;
       visited.add(point);
 
-      final currentColor = repository.getPixel(point);
+      final currentColor = repo.getPixel(point);
       if (currentColor != targetColor) continue;
 
       if (event.buttons == kPrimaryButton) {
-        repository.drawPixelPrimary(point);
+        repo.drawPixelPrimary(point);
       } else {
-        repository.drawPixelSecondary(point);
+        repo.drawPixelSecondary(point);
       }
 
       for (var offset in [
@@ -65,34 +64,22 @@ class FillTool extends Tool {
         if (!visited.contains(neighbor) &&
             neighbor.x > 0 &&
             neighbor.y > 0 &&
-            neighbor.x < repository.width &&
-            neighbor.y < repository.height) {
+            neighbor.x < repo.width &&
+            neighbor.y < repo.height) {
           queue.add(neighbor);
         }
       }
     }
 
-    repository.markLayerForRedraw();
+    repo.markLayerForRedraw();
   }
 
   @override
-  void onPointerMove(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerMove(PointerEvent event, BuildContext context) {}
 
   @override
-  void onPointerUp(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerUp(PointerEvent event, BuildContext context) {}
 
   @override
-  void onPointerSignal(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerSignal(PointerEvent event, BuildContext context) {}
 }

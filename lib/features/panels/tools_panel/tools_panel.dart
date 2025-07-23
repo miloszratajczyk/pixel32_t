@@ -7,33 +7,19 @@ import 'package:pixel32_t/core/widgets/bs_button/bs_button_style.dart';
 import 'package:pixel32_t/core/widgets/bs_button/bs_icon_button.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/tools/core/widgets/animated_tool_icon.dart';
+import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
 
 class ToolsPanel extends StatelessWidget {
   const ToolsPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.watch<ClothCubit>();
+    final cubit = context.watch<ToolCubit>();
     return SingleChildScrollView(
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // for (var tool in cubit.getTools())
-          //   Row(
-          //     children: [
-          //       BsIconButton(
-          //         iconAssetPath: tool.icon,
-          //         onTap: () {
-          //           context.read<ClothCubit>().selectTool(tool);
-          //         },
-          //       ),
-          //       BsButton(
-          //         onTap: () {
-          //           context.read<ClothCubit>().selectTool(tool);
-          //         },
-          //         child: Text(tool.name),
-          //       ),
-          //     ],
-          //   ),
+          Expanded(child: cubit.state.buildSettingsView()),
           SizedBox(
             width: 64,
             child: GridView.count(
@@ -45,15 +31,15 @@ class ToolsPanel extends StatelessWidget {
                   BsIconButton(
                     iconAssetPath: tool.icon,
                     onTap: () {
-                      context.read<ClothCubit>().selectTool(tool);
+                      context.read<ToolCubit>().selectTool(tool);
                     },
                     iconSize: 24,
-                    iconColor: tool == cubit.state.activeTool
+                    iconColor: tool == cubit.state
                         ? AppColors.primary
                         : AppColors.foreground,
                     style: BsButtonStyle(
                       padding: EdgeInsets.all(3),
-                      splashColor: tool == cubit.state.activeTool
+                      splashColor: tool == cubit.state
                           ? AppColors.primary
                           : AppColors.foreground,
                     ),
@@ -61,8 +47,6 @@ class ToolsPanel extends StatelessWidget {
               ],
             ),
           ),
-
-          cubit.state.activeTool.buildSettingsView(),
         ],
       ),
     );

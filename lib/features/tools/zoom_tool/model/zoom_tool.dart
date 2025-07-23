@@ -19,11 +19,7 @@ class ZoomTool extends Tool {
   Widget buildSettingsView() => ZoomToolSettingsView(zoomTool: this);
 
   @override
-  void onPointerDown(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {
+  void onPointerDown(PointerEvent event, BuildContext context) {
     final cubit = context.read<EditorPanelCubit>();
 
     if (event.buttons == kPrimaryButton) {
@@ -34,23 +30,11 @@ class ZoomTool extends Tool {
   }
 
   @override
-  void onPointerMove(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerMove(PointerEvent event, BuildContext context) {}
 
   @override
-  void onPointerUp(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerUp(PointerEvent event, BuildContext context) {}
 
   @override
-  void onPointerSignal(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerSignal(PointerEvent event, BuildContext context) {}
 }

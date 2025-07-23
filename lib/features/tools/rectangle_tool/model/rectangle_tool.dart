@@ -5,87 +5,92 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
-import 'package:pixel32_t/features/tools/line_tool/presentation/line_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
+import 'package:pixel32_t/features/tools/rectangle_tool/presentation/rectangle_tool_settings_view.dart';
 
-class LineTool extends Tool {
-  Point<int>? startPoint;
-  int eventButtons = 0;
+class RectangleTool extends Tool {
+  Point<int>? _startPoint;
+  bool _isPrimary = true;
+  // Settings
+  bool shouldFill = false;
+
+  RectangleTool({this.shouldFill = false});
 
   @override
-  String get name => "Line";
+  String get name => "Rectangle";
 
   @override
-  String get icon => "assets/icons/pecil.svg";
+  String get icon => "assets/icons/rectangle.svg";
 
   @override
-  Widget buildSettingsView() => LineToolSettingsView(lineTool: this);
+  Widget buildSettingsView() => RectangleToolSettingsView(rectangleTool: this);
 
   @override
   void onPointerDown(PointerEvent event, BuildContext context) {
     final repo = context.read<ClothRepository>();
     final point = event.localPosition.toIntPoint();
 
-    eventButtons = event.buttons;
-    if (eventButtons == kPrimaryButton) {
-      repo.drawPixelPrimary(point);
-    } else if (eventButtons == kSecondaryButton) {
-      repo.drawPixelSecondary(point);
-    }
-    startPoint = point;
+    _isPrimary = event.buttons == kPrimaryButton;
+    _startPoint = point;
 
     repo.flushLayerPreview();
     repo.previewLayer.visible = true;
 
     repo.markLayerForRedraw();
+    repo.requestRedraw();
   }
 
   @override
   void onPointerMove(PointerEvent event, BuildContext context) {
     final repo = context.read<ClothRepository>();
-    final point = event.localPosition.toIntPoint();
+    if (_startPoint == null) return;
 
-    if (startPoint == null) {
-      startPoint = point;
-      return;
-    }
-
-    final points = getLinePoints(startPoint!, point);
+    final currentPoint = event.localPosition.toIntPoint();
+    final points = shouldFill
+        ? getRectangleFilledPoints(_startPoint!, currentPoint)
+        : getRectangleBorderPoints(_startPoint!, currentPoint);
 
     repo.flushLayerPreview();
-    if (eventButtons == kPrimaryButton) {
+
+    if (_isPrimary) {
       points.forEach(repo.drawPixelPrimaryPreview);
-    } else if (eventButtons == kSecondaryButton) {
+    } else {
       points.forEach(repo.drawPixelSecondaryPreview);
     }
 
     repo.markLayerForRedraw();
+    repo.requestRedraw();
   }
 
   @override
   void onPointerUp(PointerEvent event, BuildContext context) {
     final repo = context.read<ClothRepository>();
-    final point = event.localPosition.toIntPoint();
+    if (_startPoint == null) return;
 
-    if (startPoint == null) {
-      return;
-    }
+    final currentPoint = event.localPosition.toIntPoint();
+    final points = shouldFill
+        ? getRectangleFilledPoints(_startPoint!, currentPoint)
+        : getRectangleBorderPoints(_startPoint!, currentPoint);
 
-    final points = getLinePoints(startPoint!, point);
-
-    if (eventButtons == kPrimaryButton) {
+    if (_isPrimary) {
       points.forEach(repo.drawPixelPrimary);
-    } else if (eventButtons == kSecondaryButton) {
+    } else {
       points.forEach(repo.drawPixelSecondary);
     }
 
-    eventButtons = 0;
-
+    _startPoint = null;
     repo.previewLayer.visible = false;
 
     repo.markLayerForRedraw();
+    repo.requestRedraw();
   }
 
   @override
   void onPointerSignal(PointerEvent event, BuildContext context) {}
+  RectangleTool copyWith({bool? shouldFill}) {
+    return RectangleTool(shouldFill: shouldFill ?? this.shouldFill);
+  }
+
+  @override
+  List<Object?> get props => [name, shouldFill];
 }

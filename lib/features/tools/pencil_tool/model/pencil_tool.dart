@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/pencil_tool/presentation/pencil_tool_settings_view.dart';
@@ -20,29 +21,23 @@ class PencilTool extends Tool {
   Widget buildSettingsView() => PencilToolSettingsView(pencilTool: this);
 
   @override
-  void onPointerDown(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {
+  void onPointerDown(PointerEvent event, BuildContext context) {
+    final repo = context.read<ClothRepository>();
     final point = event.localPosition.toIntPoint();
 
     if (event.buttons == kPrimaryButton) {
-      repository.drawPixelPrimary(point);
+      repo.drawPixelPrimary(point);
     } else if (event.buttons == kSecondaryButton) {
-      repository.drawPixelSecondary(point);
+      repo.drawPixelSecondary(point);
     }
     lastPosition = point;
 
-    repository.markLayerForRedraw();
+    repo.markLayerForRedraw();
   }
 
   @override
-  void onPointerMove(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {
+  void onPointerMove(PointerEvent event, BuildContext context) {
+    final repo = context.read<ClothRepository>();
     final point = event.localPosition.toIntPoint();
 
     if (lastPosition == null) {
@@ -53,29 +48,21 @@ class PencilTool extends Tool {
     final points = getLinePoints(lastPosition!, point);
 
     if (event.buttons == kPrimaryButton) {
-      points.forEach(repository.drawPixelPrimary);
+      points.forEach(repo.drawPixelPrimary);
     } else if (event.buttons == kSecondaryButton) {
-      points.forEach(repository.drawPixelSecondary);
+      points.forEach(repo.drawPixelSecondary);
     }
 
     lastPosition = point;
 
-    repository.markLayerForRedraw();
+    repo.markLayerForRedraw();
   }
 
   @override
-  void onPointerUp(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {
+  void onPointerUp(PointerEvent event, BuildContext context) {
     lastPosition = null;
   }
 
   @override
-  void onPointerSignal(
-    PointerEvent event,
-    ClothRepository repository,
-    BuildContext context,
-  ) {}
+  void onPointerSignal(PointerEvent event, BuildContext context) {}
 }

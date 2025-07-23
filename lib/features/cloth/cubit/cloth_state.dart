@@ -9,7 +9,6 @@ final class ClothState extends Equatable {
   final List<ClothLayer> layers;
   final int activeLayer;
   // Other
-  final Tool activeTool;
   final ui.Image? image;
 
   // Whole equality is based on this value only
@@ -21,7 +20,6 @@ final class ClothState extends Equatable {
     required this.colorPalette,
     required this.layers,
     required this.activeLayer,
-    required this.activeTool,
     this.image,
     required this.version,
   });
@@ -41,7 +39,6 @@ final class ClothState extends Equatable {
       colorPalette: colorPalette ?? this.colorPalette,
       layers: layers ?? this.layers,
       activeLayer: activeLayer ?? this.activeLayer,
-      activeTool: activeTool ?? this.activeTool,
       image: image ?? this.image,
       version: version + 1,
     );

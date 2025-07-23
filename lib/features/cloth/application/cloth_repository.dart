@@ -7,31 +7,21 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 import 'package:pixel32_t/features/cloth/application/redraw_scheduler.dart';
 import 'package:pixel32_t/features/cloth/model/cloth_layer.dart';
-import 'package:pixel32_t/features/tools/brush_tool/model/brush_tool.dart';
-import 'package:pixel32_t/features/tools/eraser_tool/model/eraser_tool.dart';
-import 'package:pixel32_t/features/tools/fill_tool/model/fill_tool.dart';
-import 'package:pixel32_t/features/tools/line_tool/model/line_tool.dart';
-import 'package:pixel32_t/features/tools/pencil_tool/model/pencil_tool.dart';
-import 'package:pixel32_t/features/tools/core/model/tool.dart';
-import 'package:pixel32_t/features/tools/zoom_tool/model/zoom_tool.dart';
+import 'package:pixel32_t/features/selection_layer/selection_layer.dart';
 
 class ClothRepository {
-  final _imageController = StreamController<ui.Image>.broadcast();
-  Stream<ui.Image> get imageStream => _imageController.stream;
-
-  // Makes sure the image is generated at a maximum of 60 fps
-  late final _scheduler = RedrawScheduler(
-    onRedraw: () async {
-      final image = await generateImage();
-      _imageController.add(image);
-    },
-  );
-
   ClothRepository() {
     previewLayer = ClothLayer(
       buffer: Uint8List(width * height * 4),
       visible: false,
     );
+
+    selectionLayer = SelectionLayer(
+      width: width,
+      height: height,
+      bitfield: Uint8List(((width * height) + 7) ~/ 8),
+    );
+    selectionLayer.selectAll();
 
     addLayer();
     // Temp fill with random color
@@ -43,6 +33,16 @@ class ClothRepository {
     requestRedraw();
   }
 
+  // Makes sure the image is generated at a maximum of 60 fps
+  final _imageController = StreamController<ui.Image>.broadcast();
+  Stream<ui.Image> get imageStream => _imageController.stream;
+  late final _scheduler = RedrawScheduler(
+    onRedraw: () async {
+      final image = await generateImage();
+      _imageController.add(image);
+    },
+  );
+
   // Canvas
   int width = 128;
   int height = 128;
@@ -51,22 +51,12 @@ class ClothRepository {
   final List<ClothLayer> clothLayers = [];
   int activeLayer = 0;
   late ClothLayer previewLayer;
+  late SelectionLayer selectionLayer;
 
   // Colors
   Color primaryColor = Color(0xff000000);
   Color secondaryColor = Color(0xffffffff);
   Set<Color> colorPalette = {};
-
-  // Tools
-  final List<Tool> tools = [
-    PencilTool(),
-    BrushTool(),
-    EraserTool(),
-    LineTool(),
-    FillTool(),
-    ZoomTool(),
-  ];
-  late Tool activeTool = tools.first;
 
   void addLayer() {
     clothLayers.add(ClothLayer(buffer: Uint8List(width * height * 4)));
@@ -81,9 +71,12 @@ class ClothRepository {
     clothLayers[activeLayer].image = null;
   }
 
-  // TODO deprecate xd
+  // TODO remove
   void setPixel(Point<int> point) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
+      return;
+    }
+    if (!selectionLayer.isSelected(point)) {
       return;
     }
 
@@ -97,6 +90,9 @@ class ClothRepository {
 
   void drawPixel(ClothLayer layer, Point<int> point, Color color) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
+      return;
+    }
+    if (!selectionLayer.isSelected(point)) {
       return;
     }
 
@@ -154,7 +150,7 @@ class ClothRepository {
     previewLayer.buffer = Uint8List(width * height * 4);
   }
 
-  Future<ui.Image> generateImageForLayer(ClothLayer layer) {
+  Future<ui.Image> generateLayerImage(ClothLayer layer) {
     final completer = Completer<ui.Image>();
     ui.decodeImageFromPixels(
       layer.buffer,
@@ -174,14 +170,14 @@ class ClothRepository {
 
     for (final layer in clothLayers) {
       if (!layer.visible) continue;
-      layer.image ??= await generateImageForLayer(layer);
+      layer.image ??= await generateLayerImage(layer);
 
       final paint = ui.Paint()..blendMode = layer.blendMode;
       canvas.drawImage(layer.image!, Offset.zero, paint);
     }
 
     if (previewLayer.visible) {
-      previewLayer.image ??= await generateImageForLayer(previewLayer);
+      previewLayer.image ??= await generateLayerImage(previewLayer);
       canvas.drawImage(previewLayer.image!, Offset.zero, ui.Paint());
     }
 

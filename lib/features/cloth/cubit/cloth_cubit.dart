@@ -23,7 +23,6 @@ class ClothCubit extends Cubit<ClothState> {
           secondaryColor: repo.secondaryColor,
           colorPalette: repo.colorPalette,
           layers: repo.clothLayers,
-          activeTool: repo.activeTool,
           activeLayer: repo.activeLayer,
           version: 0,
         ),
@@ -55,16 +54,16 @@ class ClothCubit extends Cubit<ClothState> {
     emit(state.copyWith(colorPalette: newColorPalette));
   }
 
-  // Tools
+  // // Tools
 
-  void selectTool(Tool tool) {
-    repo.activeTool = tool;
-    emit(state.copyWith(activeTool: tool));
-  }
+  // void selectTool(Tool tool) {
+  //   repo.activeTool = tool;
+  //   emit(state.copyWith(activeTool: tool));
+  // }
 
-  List<Tool> getTools() {
-    return repo.tools;
-  }
+  // List<Tool> getTools() {
+  //   return repo.tools;
+  // }
 
   // Layers
 
@@ -90,23 +89,23 @@ class ClothCubit extends Cubit<ClothState> {
 
   // Editor
 
-  void pointerDown(PointerDownEvent pointerEvent, BuildContext context) {
-    state.activeTool.onPointerDown(pointerEvent, repo, context);
-    repo.requestRedraw();
-  }
+  // void pointerDown(PointerDownEvent pointerEvent, BuildContext context) {
+  //   state.activeTool.onPointerDown(pointerEvent, repo, context);
+  //   repo.requestRedraw();
+  // }
 
-  void pointerMove(PointerMoveEvent pointerEvent, BuildContext context) {
-    state.activeTool.onPointerMove(pointerEvent, repo, context);
-    repo.requestRedraw();
-  }
+  // void pointerMove(PointerMoveEvent pointerEvent, BuildContext context) {
+  //   state.activeTool.onPointerMove(pointerEvent, repo, context);
+  //   repo.requestRedraw();
+  // }
 
-  void pointerUp(PointerUpEvent pointerEvent, BuildContext context) {
-    state.activeTool.onPointerUp(pointerEvent, repo, context);
-    repo.requestRedraw();
-  }
+  // void pointerUp(PointerUpEvent pointerEvent, BuildContext context) {
+  //   state.activeTool.onPointerUp(pointerEvent, repo, context);
+  //   repo.requestRedraw();
+  // }
 
-  void pointerSignal(PointerSignalEvent pointerEvent, BuildContext context) {
-    state.activeTool.onPointerSignal(pointerEvent, repo, context);
-    repo.requestRedraw();
-  }
+  // void pointerSignal(PointerSignalEvent pointerEvent, BuildContext context) {
+  //   state.activeTool.onPointerSignal(pointerEvent, repo, context);
+  //   repo.requestRedraw();
+  // }
 }

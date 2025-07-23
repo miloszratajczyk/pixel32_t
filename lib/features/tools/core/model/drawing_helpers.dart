@@ -45,3 +45,38 @@ List<Point<int>> getLinePoints(Point<int> start, Point<int> end) {
 
   return points;
 }
+
+List<Point<int>> getRectangleBorderPoints(Point<int> a, Point<int> b) {
+  final left = min(a.x, b.x);
+  final right = max(a.x, b.x);
+  final top = min(a.y, b.y);
+  final bottom = max(a.y, b.y);
+
+  final points = <Point<int>>[];
+
+  for (int x = left; x <= right; x++) {
+    points.add(Point(x, top));
+    points.add(Point(x, bottom));
+  }
+  for (int y = top + 1; y < bottom; y++) {
+    points.add(Point(left, y));
+    points.add(Point(right, y));
+  }
+
+  return points;
+}
+
+List<Point<int>> getRectangleFilledPoints(Point<int> a, Point<int> b) {
+  final left = min(a.x, b.x);
+  final right = max(a.x, b.x);
+  final top = min(a.y, b.y);
+  final bottom = max(a.y, b.y);
+
+  final points = <Point<int>>[];
+  for (int y = top; y <= bottom; y++) {
+    for (int x = left; x <= right; x++) {
+      points.add(Point(x, y));
+    }
+  }
+  return points;
+}
