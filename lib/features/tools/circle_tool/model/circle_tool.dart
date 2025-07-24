@@ -1,28 +1,28 @@
 import 'dart:math';
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
+import 'package:pixel32_t/features/tools/circle_tool/presentation/circle_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
-import 'package:pixel32_t/features/tools/rectangle_tool/presentation/rectangle_tool_settings_view.dart';
 
-class RectangleTool extends Tool {
-  RectangleTool({this.shouldFill = false});
+class CircleTool extends Tool {
+  CircleTool({this.shouldFill = false});
   bool shouldFill;
 
-  Point<int>? _startPoint;
+  Point<int>? _centerPoint;
   bool _isPrimary = true;
 
   @override
-  String get name => "Rectangle";
+  String get name => "Circle";
 
   @override
-  String get icon => "assets/icons/rectangle.svg";
+  String get icon => "assets/icons/circle.svg";
 
   @override
-  Widget buildSettingsView() => RectangleToolSettingsView(rectangleTool: this);
+  Widget buildSettingsView() => CircleToolSettingsView();
 
   @override
   void onPointerDown(PointerEvent event, BuildContext context) {
@@ -30,7 +30,7 @@ class RectangleTool extends Tool {
     final point = event.localPosition.toIntPoint();
 
     _isPrimary = event.buttons == kPrimaryButton;
-    _startPoint = point;
+    _centerPoint = point;
 
     repo.flushLayerPreview();
     repo.previewLayer.visible = true;
@@ -42,12 +42,12 @@ class RectangleTool extends Tool {
   @override
   void onPointerMove(PointerEvent event, BuildContext context) {
     final repo = context.read<ClothRepository>();
-    if (_startPoint == null) return;
+    if (_centerPoint == null) return;
 
-    final currentPoint = event.localPosition.toIntPoint();
+    final edgePoint = event.localPosition.toIntPoint();
     final points = shouldFill
-        ? getRectangleFilledPoints(_startPoint!, currentPoint)
-        : getRectangleBorderPoints(_startPoint!, currentPoint);
+        ? getCircleFilledPoints(_centerPoint!, edgePoint)
+        : getCircleBorderPoints(_centerPoint!, edgePoint);
 
     repo.flushLayerPreview();
 
@@ -57,19 +57,18 @@ class RectangleTool extends Tool {
       points.forEach(repo.drawPixelSecondaryPreview);
     }
 
-    repo.markLayerForRedraw();
     repo.requestRedraw();
   }
 
   @override
   void onPointerUp(PointerEvent event, BuildContext context) {
     final repo = context.read<ClothRepository>();
-    if (_startPoint == null) return;
+    if (_centerPoint == null) return;
 
-    final currentPoint = event.localPosition.toIntPoint();
+    final edgePoint = event.localPosition.toIntPoint();
     final points = shouldFill
-        ? getRectangleFilledPoints(_startPoint!, currentPoint)
-        : getRectangleBorderPoints(_startPoint!, currentPoint);
+        ? getCircleFilledPoints(_centerPoint!, edgePoint)
+        : getCircleBorderPoints(_centerPoint!, edgePoint);
 
     if (_isPrimary) {
       points.forEach(repo.drawPixelPrimary);
@@ -77,7 +76,7 @@ class RectangleTool extends Tool {
       points.forEach(repo.drawPixelSecondary);
     }
 
-    _startPoint = null;
+    _centerPoint = null;
     repo.previewLayer.visible = false;
 
     repo.markLayerForRedraw();
@@ -87,8 +86,8 @@ class RectangleTool extends Tool {
   @override
   void onPointerSignal(PointerEvent event, BuildContext context) {}
 
-  RectangleTool copyWith({bool? shouldFill}) {
-    return RectangleTool(shouldFill: shouldFill ?? this.shouldFill);
+  CircleTool copyWith({bool? shouldFill}) {
+    return CircleTool(shouldFill: shouldFill ?? this.shouldFill);
   }
 
   @override

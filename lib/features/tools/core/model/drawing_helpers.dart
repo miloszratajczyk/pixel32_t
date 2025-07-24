@@ -80,3 +80,63 @@ List<Point<int>> getRectangleFilledPoints(Point<int> a, Point<int> b) {
   }
   return points;
 }
+
+List<Point<int>> getCircleBorderPoints(Point<int> center, Point<int> edge) {
+  final radius = (center - edge).magnitude.toInt();
+  final points = <Point<int>>[];
+
+  int x = radius;
+  int y = 0;
+  int err = 0;
+
+  while (x >= y) {
+    points.addAll([
+      Point(center.x + x, center.y + y),
+      Point(center.x + y, center.y + x),
+      Point(center.x - y, center.y + x),
+      Point(center.x - x, center.y + y),
+      Point(center.x - x, center.y - y),
+      Point(center.x - y, center.y - x),
+      Point(center.x + y, center.y - x),
+      Point(center.x + x, center.y - y),
+    ]);
+
+    if (err < 0) {
+      y += 1;
+      err += 2 * y + 1;
+    } else {
+      x -= 1;
+      err -= 2 * x + 1;
+    }
+  }
+
+  points.removeWhere(
+    (p) =>
+        (p.x == center.x &&
+            (p.y == center.y + radius || p.y == center.y - radius)) ||
+        (p.y == center.y &&
+            (p.x == center.x + radius || p.x == center.x - radius)),
+  );
+
+  return points;
+}
+
+List<Point<int>> getCircleFilledPoints(Point<int> center, Point<int> edge) {
+  final radius = (center - edge).magnitude.toInt();
+  final points = <Point<int>>[];
+
+  final rSq = radius * radius;
+  for (int y = 0; y < radius; y++) {
+    final ySq = y * y;
+    for (int x = 0; x < radius; x++) {
+      if (x * x + ySq <= rSq) {
+        points.add(Point(center.x + x, center.y + y));
+        points.add(Point(center.x - x, center.y + y));
+        points.add(Point(center.x - x, center.y - y));
+        points.add(Point(center.x + x, center.y - y));
+      }
+    }
+  }
+
+  return points;
+}

@@ -50,8 +50,8 @@ class ClothRepository {
   // Layers
   final List<ClothLayer> clothLayers = [];
   int activeLayer = 0;
-  late ClothLayer previewLayer;
-  late SelectionLayer selectionLayer;
+  late final ClothLayer previewLayer;
+  late final SelectionLayer selectionLayer;
 
   // Colors
   Color primaryColor = Color(0xff000000);

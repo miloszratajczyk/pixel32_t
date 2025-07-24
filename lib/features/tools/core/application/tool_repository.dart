@@ -1,4 +1,5 @@
 import 'package:pixel32_t/features/tools/brush_tool/model/brush_tool.dart';
+import 'package:pixel32_t/features/tools/circle_tool/model/circle_tool.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
 import 'package:pixel32_t/features/tools/eraser_tool/model/eraser_tool.dart';
 import 'package:pixel32_t/features/tools/fill_tool/model/fill_tool.dart';
@@ -18,6 +19,7 @@ class ToolRepository {
     ZoomTool(),
     RectangleTool(),
     RectangleSelectTool(),
+    CircleTool(),
   ];
 
   // TODO save and load tool settings
