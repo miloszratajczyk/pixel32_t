@@ -1,10 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
-import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
 import 'package:pixel32_t/features/selection_layer/widgets/selection_layer_overlay.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
 
@@ -28,20 +26,16 @@ class _EditorPanelState extends State<EditorPanel> {
             scale: state.scale.toDouble(),
             child: Listener(
               onPointerDown: (pointerEvent) => context
-                  .read<ToolCubit>()
-                  .state
+                  .read<EditorPanelCubit>()
                   .onPointerDown(pointerEvent, context),
               onPointerMove: (pointerEvent) => context
-                  .read<ToolCubit>()
-                  .state
+                  .read<EditorPanelCubit>()
                   .onPointerMove(pointerEvent, context),
               onPointerUp: (pointerEvent) => context
-                  .read<ToolCubit>()
-                  .state
+                  .read<EditorPanelCubit>()
                   .onPointerUp(pointerEvent, context),
               onPointerSignal: (pointerEvent) => context
-                  .read<ToolCubit>()
-                  .state
+                  .read<EditorPanelCubit>()
                   .onPointerSignal(pointerEvent, context),
               child: Stack(
                 children: [

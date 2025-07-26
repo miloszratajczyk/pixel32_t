@@ -4,7 +4,6 @@ import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
 import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
 import 'package:pixel32_t/features/tools/rectangle_select_tool/model/rectangle_select_tool.dart';
-import 'package:pixel32_t/features/tools/rectangle_tool/model/rectangle_tool.dart';
 
 class RectangleSelectToolSettingsView extends StatelessWidget {
   const RectangleSelectToolSettingsView({super.key});

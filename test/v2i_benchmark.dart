@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'circle_benchmark.dart';
 
 void main() {

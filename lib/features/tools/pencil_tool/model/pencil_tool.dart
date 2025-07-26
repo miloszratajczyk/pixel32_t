@@ -3,12 +3,17 @@ import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/pencil_tool/presentation/pencil_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
 
-class PencilTool extends Tool {
+part 'pencil_tool.freezed.dart';
+
+@unfreezed
+class PencilTool with _$PencilTool implements Tool {
+  @override
   Point<int>? lastPosition;
 
   @override

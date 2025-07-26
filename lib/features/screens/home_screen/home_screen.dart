@@ -5,7 +5,7 @@ import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
 import 'package:pixel32_t/features/screens/home_screen/view/home_screen_view.dart';
 import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
-import 'package:pixel32_t/features/tools/core/application/tool_repository.dart';
+import 'package:pixel32_t/features/tools/core/repo/tool_repository.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,7 +19,9 @@ class HomeScreen extends StatelessWidget {
       providers: [
         BlocProvider<ClothCubit>(create: (_) => ClothCubit(clothRepository)),
         BlocProvider<ToolCubit>(create: (_) => ToolCubit(toolRepository)),
-        BlocProvider<EditorPanelCubit>(create: (_) => EditorPanelCubit()),
+        BlocProvider<EditorPanelCubit>(
+          create: (_) => EditorPanelCubit(toolRepository),
+        ),
         BlocProvider<SelectionCubit>(
           create: (_) => SelectionCubit(clothRepository),
         ),

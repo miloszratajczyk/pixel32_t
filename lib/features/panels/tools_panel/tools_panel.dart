@@ -1,11 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pixel32_t/features/core/view/style/app_colors.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
 import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button_style.dart';
 import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_icon_button.dart';
-import 'package:pixel32_t/features/tools/core/widgets/animated_tool_icon.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
 
 class ToolsPanel extends StatelessWidget {

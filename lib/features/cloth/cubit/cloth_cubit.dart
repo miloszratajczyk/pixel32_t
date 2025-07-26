@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 import 'dart:ui';
 
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pixel32_t/features/cloth/model/cloth_layer.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
