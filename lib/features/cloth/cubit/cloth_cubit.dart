@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/widgets.dart';
-import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pixel32_t/features/cloth/model/cloth_layer.dart';
-import 'package:pixel32_t/features/tools/core/model/tool.dart';
+import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 
 part 'cloth_state.dart';
+part 'cloth_cubit.freezed.dart';
 
 class ClothCubit extends Cubit<ClothState> {
   final ClothRepository repo;
@@ -54,17 +52,6 @@ class ClothCubit extends Cubit<ClothState> {
     emit(state.copyWith(colorPalette: newColorPalette));
   }
 
-  // // Tools
-
-  // void selectTool(Tool tool) {
-  //   repo.activeTool = tool;
-  //   emit(state.copyWith(activeTool: tool));
-  // }
-
-  // List<Tool> getTools() {
-  //   return repo.tools;
-  // }
-
   // Layers
 
   void selectLayer(int index) {
@@ -86,26 +73,4 @@ class ClothCubit extends Cubit<ClothState> {
     emit(state.copyWith(layers: List.unmodifiable(repo.clothLayers)));
     repo.requestRedraw();
   }
-
-  // Editor
-
-  // void pointerDown(PointerDownEvent pointerEvent, BuildContext context) {
-  //   state.activeTool.onPointerDown(pointerEvent, repo, context);
-  //   repo.requestRedraw();
-  // }
-
-  // void pointerMove(PointerMoveEvent pointerEvent, BuildContext context) {
-  //   state.activeTool.onPointerMove(pointerEvent, repo, context);
-  //   repo.requestRedraw();
-  // }
-
-  // void pointerUp(PointerUpEvent pointerEvent, BuildContext context) {
-  //   state.activeTool.onPointerUp(pointerEvent, repo, context);
-  //   repo.requestRedraw();
-  // }
-
-  // void pointerSignal(PointerSignalEvent pointerEvent, BuildContext context) {
-  //   state.activeTool.onPointerSignal(pointerEvent, repo, context);
-  //   repo.requestRedraw();
-  // }
 }

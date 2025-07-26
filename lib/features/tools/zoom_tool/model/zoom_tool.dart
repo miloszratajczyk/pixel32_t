@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
+import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
 import 'package:pixel32_t/features/tools/zoom_tool/presentation/zoom_tool_settings_view.dart';

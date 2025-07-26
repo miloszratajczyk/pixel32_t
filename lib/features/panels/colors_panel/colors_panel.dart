@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pixel32_t/core/widgets/bs_button/bs_button.dart';
-import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
+import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
+import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 import 'package:pixel32_t/features/panels/colors_panel/widgets/color_picker.dart';
 
 class ColorsPanel extends StatefulWidget {

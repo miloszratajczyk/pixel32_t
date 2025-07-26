@@ -1,17 +1,25 @@
 part of 'cloth_cubit.dart';
 
-final class ClothState extends Equatable {
+@freezed
+class ClothState with _$ClothState {
   // Colors
+  @override
   final Color primaryColor;
+  @override
   final Color secondaryColor;
+  @override
   final Set<Color> colorPalette;
   // Layers
+  @override
   final List<ClothLayer> layers;
+  @override
   final int activeLayer;
   // Other
+  @override
   final ui.Image? image;
 
   // Whole equality is based on this value only
+  @override
   final int version;
 
   const ClothState({
@@ -23,27 +31,4 @@ final class ClothState extends Equatable {
     this.image,
     required this.version,
   });
-
-  ClothState copyWith({
-    Color? primaryColor,
-    Color? secondaryColor,
-    Set<Color>? colorPalette,
-    List<ClothLayer>? layers,
-    int? activeLayer,
-    Tool? activeTool,
-    ui.Image? image,
-  }) {
-    return ClothState(
-      primaryColor: primaryColor ?? this.primaryColor,
-      secondaryColor: secondaryColor ?? this.secondaryColor,
-      colorPalette: colorPalette ?? this.colorPalette,
-      layers: layers ?? this.layers,
-      activeLayer: activeLayer ?? this.activeLayer,
-      image: image ?? this.image,
-      version: version + 1,
-    );
-  }
-
-  @override
-  List<Object> get props => [version];
 }

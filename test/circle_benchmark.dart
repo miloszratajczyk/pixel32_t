@@ -1,6 +1,7 @@
 import 'dart:math';
+import 'dart:math' as math;
 
-import 'package:pixel32_t/core/model/v2i.dart';
+import 'package:flutter/foundation.dart';
 
 // Version 5 is the fastest but the circle is asymetric by one pixel and looks off, so verinon four it is.
 
@@ -18,6 +19,25 @@ void main() {
   print('t3: $t3 µs');
   print('t4: $t4 µs');
   print('t5: $t5 µs');
+}
+
+@immutable
+final class IV2i {
+  const IV2i(this.x, this.y);
+  final int x, y;
+
+  IV2i operator +(IV2i other) => IV2i(x + other.x, y + other.y);
+  IV2i operator -(IV2i other) => IV2i(x - other.x, y - other.y);
+  double get magnitude => math.sqrt((x * x + y * y).toDouble());
+  @override
+  bool operator ==(Object other) =>
+      other is IV2i && other.x == x && other.y == y;
+
+  @override
+  int get hashCode => Object.hash(x, y);
+
+  @override
+  String toString() => 'V2i($x, $y)';
 }
 
 int runBenchmark(Function(Point<int>, Point<int>) fn, int iterations) {

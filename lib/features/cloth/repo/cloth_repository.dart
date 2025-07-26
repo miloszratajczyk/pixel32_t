@@ -5,8 +5,8 @@ import 'dart:ui';
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
-import 'package:pixel32_t/features/cloth/application/redraw_scheduler.dart';
 import 'package:pixel32_t/features/cloth/model/cloth_layer.dart';
+import 'package:pixel32_t/features/cloth/model/redraw_scheduler.dart';
 import 'package:pixel32_t/features/selection_layer/selection_layer.dart';
 
 class ClothRepository {

@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pixel32_t/core/widgets/bs_button/bs_button.dart';
-import 'package:pixel32_t/core/widgets/bs_button/bs_button_style.dart';
+import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
+import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button_style.dart';
 
 class BsIconButton extends StatefulWidget {
   const BsIconButton({

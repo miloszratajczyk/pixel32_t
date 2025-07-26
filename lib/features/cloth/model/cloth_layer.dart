@@ -1,10 +1,9 @@
 import 'dart:typed_data' show Uint8List;
 import 'dart:ui' as ui;
 
-import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
-class ClothLayer extends Equatable {
+class ClothLayer {
   Uint8List buffer;
   bool visible;
   double opacity;
@@ -16,7 +15,4 @@ class ClothLayer extends Equatable {
     this.opacity = 1.0,
     this.blendMode = BlendMode.srcOver,
   });
-
-  @override
-  List<Object?> get props => [buffer, visible, opacity, blendMode, image];
 }

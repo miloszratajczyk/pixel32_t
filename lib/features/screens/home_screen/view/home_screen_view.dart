@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pixel32_t/core/style/app_colors.dart';
-import 'package:pixel32_t/core/widgets/resizable_tabs.dart';
+import 'package:pixel32_t/features/core/view/style/app_colors.dart';
+import 'package:pixel32_t/features/core/view/widgets/resizable_tabs.dart';
 import 'package:pixel32_t/features/panels/colors_panel/colors_panel.dart';
 import 'package:pixel32_t/features/panels/editor_panel/editor_panel.dart';
 import 'package:pixel32_t/features/panels/layers_panel/layers_panel.dart';

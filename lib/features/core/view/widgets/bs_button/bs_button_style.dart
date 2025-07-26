@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:pixel32_t/core/style/app_colors.dart';
+import 'package:pixel32_t/features/core/view/style/app_colors.dart';
 
 class BsButtonStyle {
   const BsButtonStyle({

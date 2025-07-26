@@ -1,9 +1,10 @@
 import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'editor_panel_state.dart';
+part 'editor_panel_cubit.freezed.dart';
 
 class EditorPanelCubit extends Cubit<EditorPanelState> {
   EditorPanelCubit() : super(EditorPanelState());

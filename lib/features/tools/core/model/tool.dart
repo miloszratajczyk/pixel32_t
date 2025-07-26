@@ -1,7 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class Tool extends Equatable {
+abstract class Tool {
   String get name;
   String get icon;
   Widget buildSettingsView();
@@ -10,7 +9,4 @@ abstract class Tool extends Equatable {
   void onPointerMove(PointerEvent event, BuildContext context);
   void onPointerUp(PointerEvent event, BuildContext context);
   void onPointerSignal(PointerEvent event, BuildContext context);
-
-  @override
-  List<Object?> get props => [name];
 }

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
+import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 import 'package:pixel32_t/features/tools/brush_tool/presentation/brush_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';

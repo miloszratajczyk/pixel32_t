@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:pixel32_t/features/cloth/application/cloth_repository.dart';
+import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
 import 'package:pixel32_t/features/selection_layer/selection_layer.dart';
 
 class SelectionCubit extends Cubit<SelectionLayer> {

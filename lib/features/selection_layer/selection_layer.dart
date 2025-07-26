@@ -1,10 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:equatable/equatable.dart';
-
-final class SelectionLayer extends Equatable {
+final class SelectionLayer {
   final int width;
   final int height;
   final Uint8List _bitfield;
@@ -125,5 +124,16 @@ final class SelectionLayer extends Equatable {
   }
 
   @override
-  List<Object?> get props => [version];
+  bool operator ==(covariant SelectionLayer other) {
+    if (identical(this, other)) return true;
+    return other.version == version;
+  }
+
+  @override
+  int get hashCode {
+    return width.hashCode ^
+        height.hashCode ^
+        _bitfield.hashCode ^
+        version.hashCode;
+  }
 }
