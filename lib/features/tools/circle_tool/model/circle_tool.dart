@@ -4,16 +4,20 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
-import 'package:pixel32_t/features/tools/circle_tool/presentation/circle_tool_settings_view.dart';
+import 'package:pixel32_t/features/core/model/v2i.dart';
+import 'package:pixel32_t/features/tools/circle_tool/view/circle_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
+import 'package:pixel32_t/features/tools/core/repo/tool_repository.dart';
 
 class CircleTool extends Tool {
   CircleTool({this.shouldFill = false});
+
   bool shouldFill;
 
-  Point<int>? _centerPoint;
-  bool _isPrimary = true;
+  V2i? _startPosition;
+  V2i? _lastPosition;
+  Color _color = const Color(0xff000000);
 
   @override
   String get name => "Circle";
@@ -25,71 +29,53 @@ class CircleTool extends Tool {
   Widget buildSettingsView() => CircleToolSettingsView();
 
   @override
-  void onPointerDown(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    final point = event.localPosition.toIntPoint();
+  void onPointerDown(PointerDownEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final toolRepository = context.read<ToolRepository>();
+    final point = event.localPosition.toV2i();
 
-    _isPrimary = event.buttons == kPrimaryButton;
-    _centerPoint = point;
+    _lastPosition = point;
+    _startPosition = point;
+    _color = event.buttons == kPrimaryButton
+        ? toolRepository.primaryColor
+        : toolRepository.secondaryColor;
 
-    repo.flushLayerPreview();
-    repo.previewLayer.visible = true;
-
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.previewLayer.flush();
+    clothRepository.previewLayer.show();
   }
 
   @override
-  void onPointerMove(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    if (_centerPoint == null) return;
+  void onPointerMove(PointerMoveEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final point = event.localPosition.toV2i();
+    if (_lastPosition == point) return;
+    _lastPosition = point;
 
-    final edgePoint = event.localPosition.toIntPoint();
+    _startPosition ??= point;
     final points = shouldFill
-        ? getCircleFilledPoints(_centerPoint!, edgePoint)
-        : getCircleBorderPoints(_centerPoint!, edgePoint);
+        ? getCircleFilledPoints(_startPosition!, point)
+        : getCircleBorderPoints(_startPosition!, point);
 
-    repo.flushLayerPreview();
-
-    if (_isPrimary) {
-      points.forEach(repo.drawPixelPrimaryPreview);
-    } else {
-      points.forEach(repo.drawPixelSecondaryPreview);
+    clothRepository.previewLayer.flush();
+    for (final point in points) {
+      clothRepository.setPixel(point, _color);
     }
 
-    repo.requestRedraw();
+    clothRepository.previewLayer.markForRedraw();
+    clothRepository.requestRedraw();
   }
 
   @override
-  void onPointerUp(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    if (_centerPoint == null) return;
+  void onPointerUp(PointerUpEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
 
-    final edgePoint = event.localPosition.toIntPoint();
-    final points = shouldFill
-        ? getCircleFilledPoints(_centerPoint!, edgePoint)
-        : getCircleBorderPoints(_centerPoint!, edgePoint);
-
-    if (_isPrimary) {
-      points.forEach(repo.drawPixelPrimary);
-    } else {
-      points.forEach(repo.drawPixelSecondary);
-    }
-
-    _centerPoint = null;
-    repo.previewLayer.visible = false;
-
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.requestRedraw(shouldCommit: true);
   }
 
   @override
-  void onPointerSignal(PointerEvent event, BuildContext context) {}
+  void onPointerSignal(PointerSignalEvent event, BuildContext context) {}
 
   CircleTool copyWith({bool? shouldFill}) {
     return CircleTool(shouldFill: shouldFill ?? this.shouldFill);
   }
-
-  @override
-  List<Object?> get props => [name, shouldFill];
 }

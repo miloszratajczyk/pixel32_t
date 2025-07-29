@@ -1,16 +1,20 @@
 import 'dart:collection';
-import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
+import 'package:pixel32_t/features/core/model/v2i.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
-import 'package:pixel32_t/features/tools/fill_tool/presentation/fill_tool_settings_view.dart';
+import 'package:pixel32_t/features/tools/core/repo/tool_repository.dart';
+import 'package:pixel32_t/features/tools/fill_tool/view/fill_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
 import 'package:flutter/material.dart';
 
 class FillTool extends Tool {
-  int tolerance = 10;
+  FillTool({this.tolerance = 0, this.isContinuous = true});
+
+  double tolerance;
+  bool isContinuous;
 
   @override
   String get name => "Fill";
@@ -19,24 +23,25 @@ class FillTool extends Tool {
   String get icon => "assets/icons/fill.svg";
 
   @override
-  Widget buildSettingsView() => FillToolSettingsView(fillTool: this);
+  Widget buildSettingsView() => FillToolSettingsView();
 
-  @override
-  void onPointerDown(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
+  void _fillContinuous(PointerDownEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final toolRepository = context.read<ToolRepository>();
+    final startPoint = event.localPosition.toV2i();
 
-    final startPoint = event.localPosition.toIntPoint();
-
-    final targetColor = repo.getPixel(startPoint);
-
+    final targetColor = clothRepository.getPixel(startPoint);
     final fillColor = event.buttons == kPrimaryButton
-        ? repo.primaryColor
-        : repo.secondaryColor;
-
+        ? toolRepository.primaryColor
+        : toolRepository.secondaryColor;
     if (targetColor == fillColor) return;
 
-    final visited = <Point<int>>{};
-    final queue = Queue<Point<int>>();
+    clothRepository.previewLayer.flush();
+    clothRepository.previewLayer.show();
+
+    final pointsToDraw = <V2i>{};
+    final visited = <V2i>{};
+    final queue = Queue<V2i>();
     queue.add(startPoint);
 
     while (queue.isNotEmpty) {
@@ -45,41 +50,87 @@ class FillTool extends Tool {
       if (visited.contains(point)) continue;
       visited.add(point);
 
-      final currentColor = repo.getPixel(point);
-      if (currentColor != targetColor) continue;
+      // Check similarity
+      final currentColor = clothRepository.getPixel(point);
+      if (colorDistance(currentColor, targetColor) > tolerance) continue;
 
-      if (event.buttons == kPrimaryButton) {
-        repo.drawPixelPrimary(point);
-      } else {
-        repo.drawPixelSecondary(point);
-      }
+      pointsToDraw.add(point);
 
-      for (var offset in [
-        Point(0, -1),
-        Point(0, 1),
-        Point(-1, 0),
-        Point(1, 0),
-      ]) {
-        final neighbor = Point(point.x + offset.x, point.y + offset.y);
+      for (var offset in [V2i(0, -1), V2i(0, 1), V2i(-1, 0), V2i(1, 0)]) {
+        final neighbor = V2i(point.x + offset.x, point.y + offset.y);
         if (!visited.contains(neighbor) &&
-            neighbor.x > 0 &&
-            neighbor.y > 0 &&
-            neighbor.x < repo.width &&
-            neighbor.y < repo.height) {
+            neighbor.x >= 0 &&
+            neighbor.y >= 0 &&
+            neighbor.x < clothRepository.width &&
+            neighbor.y < clothRepository.height) {
           queue.add(neighbor);
         }
       }
     }
 
-    repo.markLayerForRedraw();
+    for (final point in pointsToDraw) {
+      clothRepository.setPixel(point, fillColor);
+    }
+
+    clothRepository.previewLayer.markForRedraw();
+    clothRepository.requestRedraw(shouldCommit: true);
+  }
+
+  void _fillDiscontinuous(PointerDownEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final toolRepository = context.read<ToolRepository>();
+    final startPoint = event.localPosition.toV2i();
+
+    final targetColor = clothRepository.getPixel(startPoint);
+    final fillColor = event.buttons == kPrimaryButton
+        ? toolRepository.primaryColor
+        : toolRepository.secondaryColor;
+    if (targetColor == fillColor) return;
+
+    clothRepository.previewLayer.flush();
+    clothRepository.previewLayer.show();
+
+    final pointsToDraw = <V2i>{};
+    for (int x = 0; x < clothRepository.width; x++) {
+      for (int y = 0; y < clothRepository.height; y++) {
+        final point = V2i(x, y);
+        final currentColor = clothRepository.getPixel(point);
+        if (colorDistance(currentColor, targetColor) <= tolerance) {
+          pointsToDraw.add(point);
+        }
+      }
+    }
+
+    for (final point in pointsToDraw) {
+      clothRepository.setPixel(point, fillColor);
+    }
+
+    clothRepository.previewLayer.markForRedraw();
+    clothRepository.requestRedraw(shouldCommit: true);
   }
 
   @override
-  void onPointerMove(PointerEvent event, BuildContext context) {}
+  void onPointerDown(PointerDownEvent event, BuildContext context) {
+    if (isContinuous) {
+      _fillContinuous(event, context);
+    } else {
+      _fillDiscontinuous(event, context);
+    }
+  }
 
   @override
-  void onPointerUp(PointerEvent event, BuildContext context) {}
+  void onPointerMove(PointerMoveEvent event, BuildContext context) {}
 
   @override
-  void onPointerSignal(PointerEvent event, BuildContext context) {}
+  void onPointerUp(PointerUpEvent event, BuildContext context) {}
+
+  @override
+  void onPointerSignal(PointerSignalEvent event, BuildContext context) {}
+
+  FillTool copyWith({double? tolerance, bool? isContinuous}) {
+    return FillTool(
+      tolerance: tolerance ?? this.tolerance,
+      isContinuous: isContinuous ?? this.isContinuous,
+    );
+  }
 }

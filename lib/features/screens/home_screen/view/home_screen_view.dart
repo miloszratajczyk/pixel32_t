@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pixel32_t/features/core/view/style/app_colors.dart';
 import 'package:pixel32_t/features/core/view/widgets/resizable_tabs.dart';
-import 'package:pixel32_t/features/panels/colors_panel/colors_panel.dart';
-import 'package:pixel32_t/features/panels/editor_panel/editor_panel.dart';
-import 'package:pixel32_t/features/panels/layers_panel/layers_panel.dart';
-import 'package:pixel32_t/features/panels/preview_panel/preview_panel.dart';
+import 'package:pixel32_t/features/panels/colors_panel/view/colors_panel.dart';
+import 'package:pixel32_t/features/panels/editor_panel/view/editor_panel.dart';
+import 'package:pixel32_t/features/panels/layers_panel/view/layers_panel.dart';
+import 'package:pixel32_t/features/panels/preview_panel/view/preview_panel.dart';
 import 'package:pixel32_t/features/panels/tools_panel/tools_panel.dart';
 
 class HomeScreenView extends StatelessWidget {

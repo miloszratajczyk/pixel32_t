@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -7,13 +8,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 import 'package:pixel32_t/features/cloth/model/cloth_layer.dart';
 import 'package:pixel32_t/features/cloth/model/redraw_scheduler.dart';
+import 'package:pixel32_t/features/core/model/v2i.dart';
 import 'package:pixel32_t/features/selection_layer/selection_layer.dart';
 
 class ClothRepository {
   ClothRepository() {
     previewLayer = ClothLayer(
       buffer: Uint8List(width * height * 4),
-      visible: false,
+      isVisible: true,
     );
 
     selectionLayer = SelectionLayer(
@@ -22,15 +24,14 @@ class ClothRepository {
       bitfield: Uint8List(((width * height) + 7) ~/ 8),
     );
     selectionLayer.selectAll();
-
-    addLayer();
+    _layers.add(ClothLayer(buffer: Uint8List(width * height * 4)));
     // Temp fill with random color
-    final buffer = clothLayers[0].buffer;
+    final buffer = _layers[0].buffer;
     for (int i = 0; i < buffer.length; i++) {
       buffer[i] = (Random().nextInt(32) * 255.0).round() & 0xff;
     }
 
-    requestRedraw();
+    _scheduler.requestRedraw();
   }
 
   // Makes sure the image is generated at a maximum of 60 fps
@@ -48,69 +49,59 @@ class ClothRepository {
   int height = 128;
 
   // Layers
-  final List<ClothLayer> clothLayers = [];
-  int activeLayer = 0;
+  final List<ClothLayer> _layers = [];
+  UnmodifiableListView<ClothLayer> get layers => UnmodifiableListView(_layers);
+
+  int _activeLayerIx = 0;
+
+  /// Index of the active layer that is used for drawing
+  get activeLayerIx => _activeLayerIx;
+  ClothLayer get activeLayer => _layers[_activeLayerIx];
+  // Maybe replace with just a buffer
   late final ClothLayer previewLayer;
   late final SelectionLayer selectionLayer;
 
-  // Colors
-  Color primaryColor = Color(0xff000000);
-  Color secondaryColor = Color(0xffffffff);
-  Set<Color> colorPalette = {};
-
+  /// Creates a new layer after the active layer and
+  /// makes the new layer active
   void addLayer() {
-    clothLayers.add(ClothLayer(buffer: Uint8List(width * height * 4)));
+    _layers.insert(
+      _activeLayerIx + 1,
+      ClothLayer(buffer: Uint8List(width * height * 4)),
+    );
+    selectLayer(_activeLayerIx + 1);
   }
 
-  void selectActiveLayer(int ix) {
-    if (ix < 0 || ix >= clothLayers.length) return;
-    activeLayer = ix;
+  /// Makes the layer with given index active
+  void selectLayer(int ix) {
+    if (ix < 0 || ix >= _layers.length) return;
+    _activeLayerIx = ix;
   }
 
-  void markLayerForRedraw() {
-    clothLayers[activeLayer].image = null;
+  void updateLayer(int ix, ClothLayer layer) {
+    if (ix < 0 || ix >= _layers.length) return;
+    _layers[ix] = layer;
   }
 
-  // TODO remove
-  void setPixel(Point<int> point) {
+  void setPixel(V2i point, Color color, {bool checkSelection = true}) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return;
     }
-    if (!selectionLayer.isSelected(point)) {
-      return;
-    }
+    if (checkSelection && !selectionLayer.at(point.x, point.y)) return;
 
-    final buffer = clothLayers[activeLayer].buffer;
+    final buffer = previewLayer.buffer;
     final index = (point.y * width + point.x) * 4;
-    buffer[index + 0] = (primaryColor.r * 255.0).round() & 0xff;
-    buffer[index + 1] = (primaryColor.g * 255.0).round() & 0xff;
-    buffer[index + 2] = (primaryColor.b * 255.0).round() & 0xff;
-    buffer[index + 3] = (primaryColor.a * 255.0).round() & 0xff;
-  }
-
-  void drawPixel(ClothLayer layer, Point<int> point, Color color) {
-    if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
-      return;
-    }
-    if (!selectionLayer.isSelected(point)) {
-      return;
-    }
-
-    final buffer = layer.buffer;
-    final index = (point.y * width + point.x) * 4;
-
     buffer[index + 0] = (color.r * 255.0).round() & 0xff;
     buffer[index + 1] = (color.g * 255.0).round() & 0xff;
     buffer[index + 2] = (color.b * 255.0).round() & 0xff;
     buffer[index + 3] = (color.a * 255.0).round() & 0xff;
   }
 
-  Color getPixel(Point<int> point) {
+  Color getPixel(V2i point) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return Color(0x00000000);
     }
 
-    final buffer = clothLayers[activeLayer].buffer;
+    final buffer = _layers[_activeLayerIx].buffer;
     final index = (point.y * width + point.x) * 4;
 
     return Color.fromRGBO(
@@ -121,33 +112,78 @@ class ClothRepository {
     );
   }
 
-  void drawPixelPrimary(Point<int> point) {
-    drawPixel(clothLayers[activeLayer], point, primaryColor);
+  Future<Color> getImagePixel(V2i point) async {
+    if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
+      return Color(0x00000000);
+    }
+
+    // Try to get the opaque color from last fully visible layer
+    // to avoid generating the whole image
+    // should happen most of the times
+    final lastFullyVisibleLayer = _layers
+        .where((e) => e.isVisible && e.opacity == 1.0)
+        .lastOrNull;
+    if (lastFullyVisibleLayer != null) {
+      final buffer = lastFullyVisibleLayer.buffer;
+      final index = (point.y * width + point.x) * 4;
+      final color = Color.fromRGBO(
+        buffer[index + 0].round(),
+        buffer[index + 1].round(),
+        buffer[index + 2].round(),
+        buffer[index + 3] / 255.0,
+      );
+      if (color.a == 1.0) {
+        return color;
+      }
+    }
+
+    // The image is generated to take blending into account
+    // if this proves too slow add functionality to generate only one pixel with blending
+    final image = await generateImage();
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    if (byteData == null) return Color(0x00000000);
+    final index = (point.y * width + point.x) * 4;
+    final buffer = byteData.buffer.asUint8List();
+    return ui.Color.fromRGBO(
+      buffer[index],
+      buffer[index + 1],
+      buffer[index + 2],
+      buffer[index + 3] / 255.0,
+    );
   }
 
-  void drawPixelSecondary(Point<int> point) {
-    drawPixel(clothLayers[activeLayer], point, secondaryColor);
+  void erasePixel(V2i point) {
+    if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
+      return;
+    }
+    if (!selectionLayer.at(point.x, point.y)) return;
+
+    final buffer = activeLayer.buffer;
+    final index = (point.y * width + point.x) * 4;
+    buffer[index + 0] = 0;
+    buffer[index + 1] = 0;
+    buffer[index + 2] = 0;
+    buffer[index + 3] = 0;
   }
 
-  void erasePixel(Point<int> point) {
-    drawPixel(clothLayers[activeLayer], point, Color(0x00000000));
+  Future<void> commitPreviewLayer() async {
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+    activeLayer.image ??= await generateLayerImage(previewLayer);
+    previewLayer.image ??= await generateLayerImage(previewLayer);
+    canvas.drawImage(activeLayer.image!, ui.Offset.zero, ui.Paint());
+    canvas.drawImage(previewLayer.image!, ui.Offset.zero, ui.Paint());
+    final image = await recorder.endRecording().toImage(width, height);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    if (byteData == null) return;
+    activeLayer.buffer = byteData.buffer.asUint8List();
+    previewLayer.hide();
+    activeLayer.markForRedraw();
   }
 
-  void drawPixelPrimaryPreview(Point<int> point) {
-    drawPixel(previewLayer, point, primaryColor);
-  }
-
-  void drawPixelSecondaryPreview(Point<int> point) {
-    drawPixel(previewLayer, point, secondaryColor);
-  }
-
-  void requestRedraw() {
+  void requestRedraw({bool shouldCommit = false}) async {
+    if (shouldCommit) await commitPreviewLayer();
     _scheduler.requestRedraw();
-  }
-
-  void flushLayerPreview() {
-    previewLayer.image = null;
-    previewLayer.buffer = Uint8List(width * height * 4);
   }
 
   Future<ui.Image> generateLayerImage(ClothLayer layer) {
@@ -168,21 +204,26 @@ class ClothRepository {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
-    for (final layer in clothLayers) {
-      if (!layer.visible) continue;
+    for (int i = 0; i < _layers.length; i++) {
+      final layer = _layers[i];
+      if (!layer.isVisible) continue;
       layer.image ??= await generateLayerImage(layer);
-
       final paint = ui.Paint()..blendMode = layer.blendMode;
       canvas.drawImage(layer.image!, Offset.zero, paint);
-    }
+      // canvas.saveLayer(
+      //   Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+      //   paint,
+      // );
 
-    if (previewLayer.visible) {
-      previewLayer.image ??= await generateLayerImage(previewLayer);
-      canvas.drawImage(previewLayer.image!, Offset.zero, ui.Paint());
+      if (i == activeLayerIx && previewLayer.isVisible) {
+        previewLayer.image ??= await generateLayerImage(previewLayer);
+        canvas.drawImage(previewLayer.image!, Offset.zero, paint);
+      }
     }
 
     final picture = recorder.endRecording();
     final composedImage = await picture.toImage(width, height);
+
     return composedImage;
   }
 

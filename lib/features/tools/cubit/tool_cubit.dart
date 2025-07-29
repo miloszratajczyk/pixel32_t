@@ -9,7 +9,6 @@ class ToolCubit extends Cubit<Tool> {
       super(toolRepository.tools.first);
 
   final ToolRepository _toolRepository;
-  // Tools
 
   void selectTool(Tool tool) {
     _toolRepository.selectTool(tool);

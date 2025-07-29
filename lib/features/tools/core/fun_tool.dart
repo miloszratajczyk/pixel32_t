@@ -17,7 +17,7 @@
 //   Widget buildSettingsView() => PencilToolSettingsView(pencilTool: this);
 
 //   @override
-//   void onPointerDown(PointerEvent event, ClothRepository repository) {
+//   void onPointerDown(PointerDownEvent event, ClothRepository repository) {
 //     final point = event.localPosition.toIntPoint();
 //     repository.setPixel(point);
 //     lastPosition = point;
@@ -26,7 +26,7 @@
 //   }
 
 //   @override
-//   void onPointerMove(PointerEvent event, ClothRepository repository) {
+//   void onPointerMove(PointerMoveEvent event, ClothRepository repository) {
 //     final localPosition = event.localPosition.toIntPoint();
 
 //     if (lastPosition == null) {
@@ -53,10 +53,10 @@
 //   }
 
 //   @override
-//   void onPointerUp(PointerEvent event, ClothRepository repository) {
+//   void onPointerUp(PointerUpEvent event, ClothRepository repository) {
 //     lastPosition = null;
 //   }
 
 //   @override
-//   void onPointerSignal(PointerEvent event, ClothRepository repository) {}
+//   void onPointerSignal(PointerSignalEvent event, ClothRepository repository) {}
 // }

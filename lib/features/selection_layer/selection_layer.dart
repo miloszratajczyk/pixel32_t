@@ -1,7 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
+
+import 'package:pixel32_t/features/core/model/v2i.dart';
 
 final class SelectionLayer {
   final int width;
@@ -29,7 +30,7 @@ final class SelectionLayer {
     return (_bitfield[byteIndex] & (1 << bitOffset)) != 0;
   }
 
-  bool isSelected(Point<int> point) {
+  bool isSelected(V2i point) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return false;
     }
@@ -39,7 +40,7 @@ final class SelectionLayer {
     return (_bitfield[byteIndex] & (1 << bitOffset)) != 0;
   }
 
-  void setSelected(Point<int> point, bool selected) {
+  void setSelected(V2i point, bool selected) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return;
     }
@@ -53,11 +54,11 @@ final class SelectionLayer {
     }
   }
 
-  void select(Point<int> point) {
+  void select(V2i point) {
     setSelected(point, true);
   }
 
-  void deselect(Point<int> point) {
+  void deselect(V2i point) {
     setSelected(point, false);
   }
 

@@ -1,18 +1,19 @@
-import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
+import 'package:pixel32_t/features/core/model/v2i.dart';
 import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
-import 'package:pixel32_t/features/tools/rectangle_select_tool/presentation/rectangle_tool_settings_view.dart';
-import 'package:pixel32_t/features/tools/rectangle_tool/presentation/rectangle_tool_settings_view.dart';
+import 'package:pixel32_t/features/tools/core/repo/tool_repository.dart';
+import 'package:pixel32_t/features/tools/rectangle_select_tool/view/rectangle_tool_settings_view.dart';
 
 class RectangleSelectTool extends Tool {
-  Point<int>? _startPoint;
+  V2i? _lastPosition;
+  V2i? _startPosition;
   bool _isPrimary = true;
+  Color _color = const Color(0xff000000);
 
   @override
   String get name => "Rectangle Select";
@@ -24,66 +25,64 @@ class RectangleSelectTool extends Tool {
   Widget buildSettingsView() => RectangleSelectToolSettingsView();
 
   @override
-  void onPointerDown(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    final point = event.localPosition.toIntPoint();
+  void onPointerDown(PointerDownEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final toolRepository = context.read<ToolRepository>();
+    final point = event.localPosition.toV2i();
 
+    _lastPosition = point;
+    _startPosition = point;
     _isPrimary = event.buttons == kPrimaryButton;
-    _startPoint = point;
 
-    repo.flushLayerPreview();
-    repo.previewLayer.visible = true;
+    _color = event.buttons == kPrimaryButton
+        ? toolRepository.primaryColor
+        : toolRepository.secondaryColor;
 
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.previewLayer.flush();
+    clothRepository.previewLayer.show();
   }
 
   @override
-  void onPointerMove(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    if (_startPoint == null) return;
+  void onPointerMove(PointerMoveEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final point = event.localPosition.toV2i();
+    if (_lastPosition == point) return;
+    _lastPosition = point;
 
-    final currentPoint = event.localPosition.toIntPoint();
-    final points = getRectangleFilledPoints(_startPoint!, currentPoint);
+    _startPosition ??= point;
+    final points = getRectangleBorderPoints(_startPosition!, point);
 
-    repo.flushLayerPreview();
-
-    if (_isPrimary) {
-      points.forEach(repo.drawPixelPrimaryPreview);
-    } else {
-      points.forEach(repo.drawPixelSecondaryPreview);
+    clothRepository.previewLayer.flush();
+    for (final point in points) {
+      clothRepository.setPixel(point, _color, checkSelection: false);
     }
 
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.previewLayer.markForRedraw();
+    clothRepository.requestRedraw();
   }
 
   @override
-  void onPointerUp(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    final selection = context.read<SelectionCubit>();
-    if (_startPoint == null) return;
+  void onPointerUp(PointerUpEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    // TODO: This shouldn't be done this way but works perfectly
+    final selectionCubit = context.read<SelectionCubit>();
+    final point = event.localPosition.toV2i();
 
-    final currentPoint = event.localPosition.toIntPoint();
-    final points = getRectangleFilledPoints(_startPoint!, currentPoint);
+    _startPosition ??= point;
+    final points = getRectangleFilledPoints(_startPosition!, point);
 
     if (_isPrimary) {
-      points.forEach(selection.state.select);
+      points.forEach(selectionCubit.state.select);
     } else {
-      points.forEach(selection.state.deselect);
+      points.forEach(selectionCubit.state.deselect);
     }
-    selection.commit();
+    selectionCubit.commit();
 
-    _startPoint = null;
-    repo.previewLayer.visible = false;
-
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.previewLayer.flush();
+    clothRepository.previewLayer.markForRedraw();
+    clothRepository.requestRedraw();
   }
 
   @override
-  void onPointerSignal(PointerEvent event, BuildContext context) {}
-
-  @override
-  List<Object?> get props => [name];
+  void onPointerSignal(PointerSignalEvent event, BuildContext context) {}
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
+import 'package:pixel32_t/features/panels/colors_panel/cubit/colors_panel_cubit.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
+import 'package:pixel32_t/features/panels/layers_panel/cubit/layers_panel_cubit.dart';
 import 'package:pixel32_t/features/screens/home_screen/view/home_screen_view.dart';
 import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
 import 'package:pixel32_t/features/tools/core/repo/tool_repository.dart';
@@ -24,6 +26,12 @@ class HomeScreen extends StatelessWidget {
         ),
         BlocProvider<SelectionCubit>(
           create: (_) => SelectionCubit(clothRepository),
+        ),
+        BlocProvider<ColorsPanelCubit>(
+          create: (_) => ColorsPanelCubit(toolRepository),
+        ),
+        BlocProvider<LayersPanelCubit>(
+          create: (_) => LayersPanelCubit(clothRepository),
         ),
       ],
       child: HomeScreenView(),

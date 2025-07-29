@@ -1,19 +1,21 @@
-import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
+import 'package:pixel32_t/features/core/model/v2i.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';
 import 'package:pixel32_t/features/tools/core/model/tool.dart';
-import 'package:pixel32_t/features/tools/rectangle_tool/presentation/rectangle_tool_settings_view.dart';
+import 'package:pixel32_t/features/tools/core/repo/tool_repository.dart';
+import 'package:pixel32_t/features/tools/rectangle_tool/view/rectangle_tool_settings_view.dart';
 
 class RectangleTool extends Tool {
   RectangleTool({this.shouldFill = false});
+
   bool shouldFill;
 
-  Point<int>? _startPoint;
-  bool _isPrimary = true;
+  V2i? _startPosition;
+  V2i? _lastPosition;
+  Color _color = const Color(0xff000000);
 
   @override
   String get name => "Rectangle";
@@ -22,70 +24,54 @@ class RectangleTool extends Tool {
   String get icon => "assets/icons/rectangle.svg";
 
   @override
-  Widget buildSettingsView() => RectangleToolSettingsView(rectangleTool: this);
+  Widget buildSettingsView() => RectangleToolSettingsView();
 
   @override
-  void onPointerDown(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    final point = event.localPosition.toIntPoint();
+  void onPointerDown(PointerDownEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final toolRepository = context.read<ToolRepository>();
+    final point = event.localPosition.toV2i();
 
-    _isPrimary = event.buttons == kPrimaryButton;
-    _startPoint = point;
+    _lastPosition = point;
+    _startPosition = point;
+    _color = event.buttons == kPrimaryButton
+        ? toolRepository.primaryColor
+        : toolRepository.secondaryColor;
 
-    repo.flushLayerPreview();
-    repo.previewLayer.visible = true;
-
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.previewLayer.flush();
+    clothRepository.previewLayer.show();
   }
 
   @override
-  void onPointerMove(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    if (_startPoint == null) return;
+  void onPointerMove(PointerMoveEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
+    final point = event.localPosition.toV2i();
+    if (_lastPosition == point) return;
+    _lastPosition = point;
 
-    final currentPoint = event.localPosition.toIntPoint();
+    _startPosition ??= point;
     final points = shouldFill
-        ? getRectangleFilledPoints(_startPoint!, currentPoint)
-        : getRectangleBorderPoints(_startPoint!, currentPoint);
+        ? getRectangleFilledPoints(_startPosition!, point)
+        : getRectangleBorderPoints(_startPosition!, point);
 
-    repo.flushLayerPreview();
-
-    if (_isPrimary) {
-      points.forEach(repo.drawPixelPrimaryPreview);
-    } else {
-      points.forEach(repo.drawPixelSecondaryPreview);
+    clothRepository.previewLayer.flush();
+    for (final point in points) {
+      clothRepository.setPixel(point, _color);
     }
 
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.previewLayer.markForRedraw();
+    clothRepository.requestRedraw();
   }
 
   @override
-  void onPointerUp(PointerEvent event, BuildContext context) {
-    final repo = context.read<ClothRepository>();
-    if (_startPoint == null) return;
+  void onPointerUp(PointerUpEvent event, BuildContext context) {
+    final clothRepository = context.read<ClothRepository>();
 
-    final currentPoint = event.localPosition.toIntPoint();
-    final points = shouldFill
-        ? getRectangleFilledPoints(_startPoint!, currentPoint)
-        : getRectangleBorderPoints(_startPoint!, currentPoint);
-
-    if (_isPrimary) {
-      points.forEach(repo.drawPixelPrimary);
-    } else {
-      points.forEach(repo.drawPixelSecondary);
-    }
-
-    _startPoint = null;
-    repo.previewLayer.visible = false;
-
-    repo.markLayerForRedraw();
-    repo.requestRedraw();
+    clothRepository.requestRedraw(shouldCommit: true);
   }
 
   @override
-  void onPointerSignal(PointerEvent event, BuildContext context) {}
+  void onPointerSignal(PointerSignalEvent event, BuildContext context) {}
 
   RectangleTool copyWith({bool? shouldFill}) {
     return RectangleTool(shouldFill: shouldFill ?? this.shouldFill);
