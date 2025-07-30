@@ -10,10 +10,6 @@ import 'package:pixel32_t/features/panels/tools_panel/tools_panel.dart';
 class HomeScreenView extends StatelessWidget {
   const HomeScreenView({super.key});
 
-  Widget get _tabDivider {
-    return Container(color: AppColors.foreground);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +21,7 @@ class HomeScreenView extends StatelessWidget {
               dividerSize: 16,
               tabFlexes: [1, 4, 1],
               divider: Container(
-                padding: EdgeInsets.symmetric(horizontal: 6),
+                padding: EdgeInsets.symmetric(horizontal: 7),
                 child: Container(color: AppColors.foreground),
               ),
               children: [
@@ -33,7 +29,10 @@ class HomeScreenView extends StatelessWidget {
                   axis: Axis.vertical,
                   dividerSize: 16,
                   tabFlexes: [2, 1],
-                  divider: _tabDivider,
+                  divider: Container(
+                    padding: EdgeInsets.symmetric(vertical: 7),
+                    child: Container(color: AppColors.foreground),
+                  ),
                   children: [ToolsPanel(), ColorsPanel()],
                 ),
                 EditorPanel(),
@@ -41,7 +40,10 @@ class HomeScreenView extends StatelessWidget {
                   axis: Axis.vertical,
                   dividerSize: 16,
                   tabFlexes: [2, 1],
-                  divider: _tabDivider,
+                  divider: Container(
+                    padding: EdgeInsets.symmetric(vertical: 7),
+                    child: Container(color: AppColors.foreground),
+                  ),
                   children: [LayersPanel(), PreviewPanel()],
                 ),
               ],

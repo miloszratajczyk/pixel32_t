@@ -8,7 +8,7 @@ class BsIconButton extends StatefulWidget {
   const BsIconButton({
     required this.iconAssetPath,
     required this.onTap,
-    this.iconSize = 24.0,
+    this.iconSize,
     this.iconColor,
     this.style = const BsButtonStyle(padding: EdgeInsets.all(4.0)),
     super.key,
@@ -16,7 +16,7 @@ class BsIconButton extends StatefulWidget {
 
   final String iconAssetPath;
   final void Function() onTap;
-  final double iconSize;
+  final double? iconSize;
   final Color? iconColor;
   final BsButtonStyle style;
 

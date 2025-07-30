@@ -169,7 +169,7 @@ class ClothRepository {
   Future<void> commitPreviewLayer() async {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
-    activeLayer.image ??= await generateLayerImage(previewLayer);
+    activeLayer.image ??= await generateLayerImage(activeLayer);
     previewLayer.image ??= await generateLayerImage(previewLayer);
     canvas.drawImage(activeLayer.image!, ui.Offset.zero, ui.Paint());
     canvas.drawImage(previewLayer.image!, ui.Offset.zero, ui.Paint());
@@ -208,13 +208,19 @@ class ClothRepository {
       final layer = _layers[i];
       if (!layer.isVisible) continue;
       layer.image ??= await generateLayerImage(layer);
-      final paint = ui.Paint()..blendMode = layer.blendMode;
+      final paint = ui.Paint()
+        ..blendMode = layer.blendMode
+        ..color = ui.Color.fromARGB(
+          (layer.opacity * 255).toInt(), // Assuming layer.opacity is 0.0–1.0
+          255,
+          255,
+          255,
+        );
       canvas.drawImage(layer.image!, Offset.zero, paint);
       // canvas.saveLayer(
       //   Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
       //   paint,
       // );
-
       if (i == activeLayerIx && previewLayer.isVisible) {
         previewLayer.image ??= await generateLayerImage(previewLayer);
         canvas.drawImage(previewLayer.image!, Offset.zero, paint);

@@ -49,4 +49,15 @@ class LayersPanelCubit extends Cubit<LayersPanelState> {
       ),
     );
   }
+
+  void updateLayer(int ix, ClothLayer layer) {
+    _clothRepository.updateLayer(ix, layer);
+    _clothRepository.requestRedraw();
+    emit(
+      state.copyWith(
+        layers: _clothRepository.layers,
+        version: state.version + 1,
+      ),
+    );
+  }
 }

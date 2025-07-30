@@ -32,12 +32,24 @@ class ColorsPanelCubit extends Cubit<ColorsPanelState> {
   }
 
   void savePrimaryColor() {
-    final newColorPalette = state.colorPalette..add(state.primaryColor);
-    emit(state.copyWith(colorPalette: newColorPalette));
+    emit(
+      state.copyWith(
+        colorPalette: UnmodifiableListView([
+          ...state.colorPalette,
+          state.primaryColor,
+        ]),
+      ),
+    );
   }
 
   void saveSecondaryColor() {
-    final newColorPalette = state.colorPalette..add(state.secondaryColor);
-    emit(state.copyWith(colorPalette: newColorPalette));
+    emit(
+      state.copyWith(
+        colorPalette: UnmodifiableListView([
+          ...state.colorPalette,
+          state.primaryColor,
+        ]),
+      ),
+    );
   }
 }

@@ -63,7 +63,7 @@ class _ColorPickerState extends State<ColorPicker> {
               _onSVBoxChanged(details.localPosition, context.size!),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final size = Size(100, 100);
+              final size = Size(constraints.maxWidth, 100);
               return CustomPaint(size: size, painter: _SVPainter(hue));
             },
           ),
