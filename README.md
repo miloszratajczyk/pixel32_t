@@ -1,16 +1,31 @@
 # pixel32_t
 
-A new Flutter project.
+pixel32_t is a lightweight, cross-platform pixel art graphics editor built entirely with Dart and Flutter. It's meant to be fast and reliable on any platform, but that's still a work in progress.
 
-## Getting Started
+![screen 1](screens/screen1.png)
 
-This project is a starting point for a Flutter application.
+## Features
+- **Graphics tools** - pencil, brush, eraser, color picker, fill, shape, polygon
+- **Selection tools** - magic wand, lasso, shape selection, polygon selection
+- **Color panel** - primary and secondary colors with a color palett
+- **Layers** - layers support with opacity and multiple blend modes
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Todo
+- Canvas resizing, saving, loading
+- Image buffer backups and operations history
+- Complete UI library and interface rework (including mobile)
+- Overall stability and preformence fixes across the whole codebase 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Running the project
+```
+git clone https://github.com/miloszratajczyk/pixel32_t
+cd pixel32_t
+
+flutter pub get
+flutter run
+```
+
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE.txt) for details.
