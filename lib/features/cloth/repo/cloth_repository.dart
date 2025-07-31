@@ -24,22 +24,26 @@ class ClothRepository {
       bitfield: Uint8List(((width * height) + 7) ~/ 8),
     );
     selectionLayer.selectAll();
+
+    // Create a new white layer
     _layers.add(ClothLayer(buffer: Uint8List(width * height * 4)));
-    // Temp fill with random color
     final buffer = _layers[0].buffer;
     for (int i = 0; i < buffer.length; i++) {
-      buffer[i] = (Random().nextInt(32) * 255.0).round() & 0xff;
+      buffer[i] = 0xff;
     }
 
     _scheduler.requestRedraw();
   }
 
-  // Makes sure the image is generated at a maximum of 60 fps
   final _imageController = StreamController<ui.Image>.broadcast();
+
+  /// Stream yelding a new image every time it's regenerated
   Stream<ui.Image> get imageStream => _imageController.stream;
+
+  // Makes sure the image is generated at a maximum of 60 fps
   late final _scheduler = RedrawScheduler(
     onRedraw: () async {
-      final image = await generateImage();
+      final image = await _generateImage();
       _imageController.add(image);
     },
   );
@@ -57,7 +61,7 @@ class ClothRepository {
   /// Index of the active layer that is used for drawing
   get activeLayerIx => _activeLayerIx;
   ClothLayer get activeLayer => _layers[_activeLayerIx];
-  // Maybe replace with just a buffer
+
   late final ClothLayer previewLayer;
   late final SelectionLayer selectionLayer;
 
@@ -77,11 +81,13 @@ class ClothRepository {
     _activeLayerIx = ix;
   }
 
+  /// Replaces the layer with the provided new one
   void updateLayer(int ix, ClothLayer layer) {
     if (ix < 0 || ix >= _layers.length) return;
     _layers[ix] = layer;
   }
 
+  /// Sets the RGBA color value of a given pixel in the preview layer
   void setPixel(V2i point, Color color, {bool checkSelection = true}) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return;
@@ -96,6 +102,7 @@ class ClothRepository {
     buffer[index + 3] = (color.a * 255.0).round() & 0xff;
   }
 
+  /// Returns color of a pixel from the current layer including opacity
   Color getPixel(V2i point) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return Color(0x00000000);
@@ -112,6 +119,7 @@ class ClothRepository {
     );
   }
 
+  /// Returns color of a pixel from the output image accounting for blending
   Future<Color> getImagePixel(V2i point) async {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return Color(0x00000000);
@@ -139,7 +147,7 @@ class ClothRepository {
 
     // The image is generated to take blending into account
     // if this proves too slow add functionality to generate only one pixel with blending
-    final image = await generateImage();
+    final image = await _generateImage();
     final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
     if (byteData == null) return Color(0x00000000);
     final index = (point.y * width + point.x) * 4;
@@ -152,6 +160,7 @@ class ClothRepository {
     );
   }
 
+  /// Set all RGBA values of a given pixel to 0
   void erasePixel(V2i point) {
     if (point.x < 0 || point.x >= width || point.y < 0 || point.y >= height) {
       return;
@@ -166,11 +175,14 @@ class ClothRepository {
     buffer[index + 3] = 0;
   }
 
-  Future<void> commitPreviewLayer() async {
+  /// Move image from the preview layer onto the active layer
+  /// Generate layers' images if null, draw onto a canvas and
+  /// save canvas bytedata to the active layer's buffer
+  Future<void> _commitPreviewLayer() async {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
-    activeLayer.image ??= await generateLayerImage(activeLayer);
-    previewLayer.image ??= await generateLayerImage(previewLayer);
+    activeLayer.image ??= await _generateLayerImage(activeLayer);
+    previewLayer.image ??= await _generateLayerImage(previewLayer);
     canvas.drawImage(activeLayer.image!, ui.Offset.zero, ui.Paint());
     canvas.drawImage(previewLayer.image!, ui.Offset.zero, ui.Paint());
     final image = await recorder.endRecording().toImage(width, height);
@@ -181,12 +193,15 @@ class ClothRepository {
     activeLayer.markForRedraw();
   }
 
+  /// Request to geenrate a new output image
+  /// If shouldCommit squash the preview layer ont the active layer
   void requestRedraw({bool shouldCommit = false}) async {
-    if (shouldCommit) await commitPreviewLayer();
+    if (shouldCommit) await _commitPreviewLayer();
     _scheduler.requestRedraw();
   }
 
-  Future<ui.Image> generateLayerImage(ClothLayer layer) {
+  /// Creates a ui.Image of a single layer from buffer data
+  Future<ui.Image> _generateLayerImage(ClothLayer layer) {
     final completer = Completer<ui.Image>();
     ui.decodeImageFromPixels(
       layer.buffer,
@@ -200,29 +215,28 @@ class ClothRepository {
     return completer.future;
   }
 
-  Future<ui.Image> generateImage() async {
+  /// Draws the output image based on layers' images,
+  /// if some are null generates those as well
+  Future<ui.Image> _generateImage() async {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
     for (int i = 0; i < _layers.length; i++) {
       final layer = _layers[i];
       if (!layer.isVisible) continue;
-      layer.image ??= await generateLayerImage(layer);
+      layer.image ??= await _generateLayerImage(layer);
       final paint = ui.Paint()
         ..blendMode = layer.blendMode
         ..color = ui.Color.fromARGB(
-          (layer.opacity * 255).toInt(), // Assuming layer.opacity is 0.0–1.0
+          (layer.opacity * 255).toInt(),
           255,
           255,
           255,
         );
+
       canvas.drawImage(layer.image!, Offset.zero, paint);
-      // canvas.saveLayer(
-      //   Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
-      //   paint,
-      // );
       if (i == activeLayerIx && previewLayer.isVisible) {
-        previewLayer.image ??= await generateLayerImage(previewLayer);
+        previewLayer.image ??= await _generateLayerImage(previewLayer);
         canvas.drawImage(previewLayer.image!, Offset.zero, paint);
       }
     }
@@ -236,5 +250,18 @@ class ClothRepository {
   void dispose() {
     _scheduler.dispose();
     _imageController.close();
+  }
+
+  /// Reorder the image layers
+  void reorder(int oldIndex, int newIndex) {
+    if (oldIndex == _activeLayerIx) {
+      _activeLayerIx = newIndex;
+    } else if (newIndex == _activeLayerIx) {
+      _activeLayerIx = oldIndex;
+    }
+    if (newIndex > oldIndex) newIndex -= 1;
+
+    final layer = _layers.removeAt(oldIndex);
+    _layers.insert(newIndex, layer);
   }
 }

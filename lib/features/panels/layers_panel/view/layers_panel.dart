@@ -23,8 +23,21 @@ class LayersPanel extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          for (int i = 0; i < layers.length; i++)
-            LayerSettings(layers: layers, i: i, cubit: cubit),
+          ReorderableListView(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            onReorder: (oldIndex, newIndex) {
+              context.read<LayersPanelCubit>().reorder(oldIndex, newIndex);
+            },
+            children: [
+              for (int i = 0; i < layers.length; i++)
+                Padding(
+                  key: layers[i].id,
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: LayerSettings(layers: layers, i: i, cubit: cubit),
+                ),
+            ],
+          ),
 
           BsButton(
             onTap: () {
@@ -118,7 +131,7 @@ class _LayerSettingsState extends State<LayerSettings> {
                   style: widget.cubit.state.activeLayerIx == widget.i
                       ? BsButtonStyle(textColor: AppColors.primary)
                       : BsButtonStyle(),
-                  child: Text("Layer ${widget.i}"),
+                  child: Text("Layer ${widget.layers[widget.i].id}"),
                 ),
               ),
               BsButton(

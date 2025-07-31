@@ -60,4 +60,16 @@ class LayersPanelCubit extends Cubit<LayersPanelState> {
       ),
     );
   }
+
+  void reorder(int oldIndex, int newIndex) {
+    _clothRepository.reorder(oldIndex, newIndex);
+    _clothRepository.requestRedraw();
+    emit(
+      state.copyWith(
+        layers: _clothRepository.layers,
+        activeLayerIx: _clothRepository.activeLayerIx,
+        version: state.version + 1,
+      ),
+    );
+  }
 }

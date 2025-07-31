@@ -14,6 +14,8 @@ class ClothLayer with _$ClothLayer {
     this.opacity = 1.0,
     this.blendMode = BlendMode.srcOver,
   });
+
+  UniqueKey id = UniqueKey();
   @override
   Uint8List buffer;
   @override
