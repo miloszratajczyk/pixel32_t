@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
+import 'package:pixel32_t/features/core/view/widgets/transparency_pattern.dart';
+
 class ColorPicker extends StatefulWidget {
   final void Function(Color color) onColorSelected;
 
@@ -98,15 +100,18 @@ class _ColorPickerState extends State<ColorPicker> {
               _onAlphaChanged(details.localPosition.dx, context.size!.width),
           onPanUpdate: (details) =>
               _onAlphaChanged(details.localPosition.dx, context.size!.width),
-          child: Container(
-            height: 20,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black26),
-              gradient: LinearGradient(
-                colors: [
-                  HSVColor.fromAHSV(0.0, hue, saturation, value).toColor(),
-                  HSVColor.fromAHSV(1.0, hue, saturation, value).toColor(),
-                ],
+          child: TransparencyPattern(
+            squareSize: 8,
+            child: Container(
+              height: 20,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black26),
+                gradient: LinearGradient(
+                  colors: [
+                    HSVColor.fromAHSV(0.0, hue, saturation, value).toColor(),
+                    HSVColor.fromAHSV(1.0, hue, saturation, value).toColor(),
+                  ],
+                ),
               ),
             ),
           ),

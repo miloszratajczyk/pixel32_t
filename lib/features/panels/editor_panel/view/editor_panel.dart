@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/cloth/view/cloth_view.dart';
+import 'package:pixel32_t/features/core/view/widgets/transparency_pattern.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
 import 'package:pixel32_t/features/selection_layer/widgets/selection_layer_overlay.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
@@ -38,7 +39,13 @@ class _EditorPanelState extends State<EditorPanel> {
               onPointerSignal: (pointerEvent) => context
                   .read<EditorPanelCubit>()
                   .onPointerSignal(pointerEvent, context),
-              child: Stack(children: [ClothView(), SelectionLayerOverlay()]),
+              child: Stack(
+                children: [
+                  Positioned.fill(child: TransparencyPattern()),
+                  ClothView(),
+                  SelectionLayerOverlay(),
+                ],
+              ),
             ),
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/cloth/view/cloth_view.dart';
 import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
+import 'package:pixel32_t/features/core/view/widgets/transparency_pattern.dart';
 
 class PreviewPanel extends StatefulWidget {
   const PreviewPanel({super.key});
@@ -68,15 +69,21 @@ class _PreviewPanelState extends State<PreviewPanel> {
           Positioned.fill(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return Listener(
-                  onPointerSignal: _handlePointerSignal,
-                  onPointerMove: (event) => _handlePointerMove(event),
-                  onPointerUp: (event) => _handlePointerUp(event, constraints),
-                  child: Transform.translate(
-                    offset: transformOffset,
-                    child: Transform.scale(
-                      scale: transformScale.toDouble(),
-                      child: ClothView(),
+                return Center(
+                  child: Listener(
+                    onPointerSignal: _handlePointerSignal,
+                    onPointerMove: (event) => _handlePointerMove(event),
+                    onPointerUp: (event) =>
+                        _handlePointerUp(event, constraints),
+                    child: Transform.translate(
+                      offset: transformOffset,
+                      child: Transform.scale(
+                        scale: transformScale.toDouble(),
+                        child: TransparencyPattern(
+                          squareSize: 4.0,
+                          child: ClothView(),
+                        ),
+                      ),
                     ),
                   ),
                 );
