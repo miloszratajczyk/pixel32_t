@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/cloth/view/cloth_view.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
-import 'package:pixel32_t/features/core/view/widgets/transparency_pattern.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_button.dart';
+import 'package:pixel32_t/core/view/widgets/transparency_pattern.dart';
+
+// TODO: Complete rework when new widget library is done
 
 class PreviewPanel extends StatefulWidget {
   const PreviewPanel({super.key});

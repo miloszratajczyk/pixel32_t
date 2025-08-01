@@ -44,9 +44,7 @@ class ToolRepository {
   List<Color> _colorPalette = [];
 
   // Tools methods
-
   int _currentToolIx = 1;
-
   Tool get currentTool => _tools[_currentToolIx];
 
   void selectTool(Tool tool) {
@@ -63,6 +61,7 @@ class ToolRepository {
   // Colors methods
   UnmodifiableListView<Color> get colorPalette =>
       UnmodifiableListView(_colorPalette);
+
   set colorPalette(List<Color> palette) {
     _colorPalette = palette;
   }

@@ -1,31 +1,25 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button_style.dart';
+import 'package:flutter/widgets.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_button_style.dart';
 
-class BsIconButton extends StatefulWidget {
-  const BsIconButton({
-    required this.iconAssetPath,
+class BsButton extends StatefulWidget {
+  /// Basic Button stylized with `BsButtonStyle`
+  const BsButton({
     required this.onTap,
-    this.iconSize,
-    this.iconColor,
-    this.style = const BsButtonStyle(padding: EdgeInsets.all(4.0)),
+    required this.child,
+    this.style = const BsButtonStyle(),
     super.key,
   });
 
-  final String iconAssetPath;
   final void Function() onTap;
-  final double? iconSize;
-  final Color? iconColor;
+  final Widget child;
   final BsButtonStyle style;
 
   @override
-  State<BsIconButton> createState() => _BsIconButtonState();
+  State<BsButton> createState() => _BsButtonState();
 }
 
-class _BsIconButtonState extends State<BsIconButton>
-    with TickerProviderStateMixin {
+class _BsButtonState extends State<BsButton> with TickerProviderStateMixin {
   Offset cursorOffset = Offset.zero;
   bool _isHovered = false;
   late AnimationController _hoverAnimationCtrl;
@@ -37,19 +31,25 @@ class _BsIconButtonState extends State<BsIconButton>
   void initState() {
     super.initState();
 
+    // Hover animation
     _hoverAnimationCtrl = AnimationController(
       duration: widget.style.hoverAnimationDuration,
       vsync: this,
     );
     _hoverAnimation = Tween(begin: 0.0, end: 1.0).animate(_hoverAnimationCtrl)
-      ..addListener(() => setState(() {}));
+      ..addListener(() {
+        setState(() {});
+      });
 
+    // Tap animation
     _tapAnimationCtrl = AnimationController(
       duration: widget.style.tapAnimationDuration,
       vsync: this,
     );
     _tapAnimation = Tween(begin: 1.0, end: 0.64).animate(_tapAnimationCtrl)
-      ..addListener(() => setState(() {}))
+      ..addListener(() {
+        setState(() {});
+      })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           _tapAnimationCtrl.reverse();
@@ -89,10 +89,6 @@ class _BsIconButtonState extends State<BsIconButton>
 
   @override
   Widget build(BuildContext context) {
-    final targetColor = _isHovered
-        ? widget.style.onSplashTextColor
-        : widget.iconColor ?? widget.style.textColor;
-
     return MouseRegion(
       onEnter: _onEnter,
       onExit: _onExit,
@@ -107,27 +103,50 @@ class _BsIconButtonState extends State<BsIconButton>
               radiusAnimationValue: _hoverAnimation.value,
               color: widget.style.splashColor,
             ),
-            child: Padding(
-              padding: widget.style.padding,
-              child: TweenAnimationBuilder<Color?>(
-                tween: ColorTween(end: targetColor),
-                duration: widget.style.hoverAnimationDuration,
-                builder: (context, animatedColor, _) {
-                  return SvgPicture.asset(
-                    widget.iconAssetPath,
-                    width: widget.iconSize,
-                    height: widget.iconSize,
-                    colorFilter: ColorFilter.mode(
-                      animatedColor!,
-                      BlendMode.srcIn,
-                    ),
-                  );
-                },
+            child: AnimatedDefaultTextStyle(
+              duration: widget.style.hoverAnimationDuration,
+              style: widget.style.textStyle.copyWith(
+                color: _isHovered
+                    ? widget.style.onSplashTextColor
+                    : widget.style.textColor,
+              ),
+              child: Padding(
+                padding: widget.style.padding,
+                child: widget.child,
               ),
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class SpalshFillPainter extends CustomPainter {
+  const SpalshFillPainter({
+    required this.offset,
+    required this.radiusAnimationValue,
+    required this.color,
+  });
+
+  final Offset offset;
+  final double radiusAnimationValue;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final estimatedMaxRadius = size.height + size.width;
+    canvas.clipRect(Offset.zero & size);
+    canvas.drawCircle(
+      offset,
+      estimatedMaxRadius * radiusAnimationValue,
+      Paint()..color = color,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant SpalshFillPainter oldDelegate) {
+    return radiusAnimationValue != oldDelegate.radiusAnimationValue ||
+        offset != oldDelegate.offset;
   }
 }

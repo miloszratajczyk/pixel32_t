@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pixel32_t/features/core/view/style/app_colors.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button_style.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_icon_button.dart';
+import 'package:pixel32_t/core/view/style/app_colors.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_button_style.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_icon_button.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';
+
+// TODO: Complete rework when new widget library is done
 
 class ToolsPanel extends StatelessWidget {
   const ToolsPanel({super.key});

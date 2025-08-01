@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AnimatedToolIcon extends StatelessWidget {
-  final String assetPath;
-  final Color color;
-  final double size;
-  final Duration duration;
-
+  /// Draws the svg icon from given `assetPath`
+  /// handles animation on color change
   const AnimatedToolIcon({
     super.key,
     required this.assetPath,
@@ -14,6 +11,11 @@ class AnimatedToolIcon extends StatelessWidget {
     this.size = 32,
     this.duration = const Duration(milliseconds: 300),
   });
+
+  final String assetPath;
+  final Color color;
+  final double size;
+  final Duration duration;
 
   @override
   Widget build(BuildContext context) {

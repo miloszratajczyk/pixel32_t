@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pixel32_t/features/core/view/style/app_colors.dart';
-import 'package:pixel32_t/features/core/view/widgets/resizable_tabs.dart';
+import 'package:pixel32_t/core/view/style/app_colors.dart';
+import 'package:pixel32_t/core/view/widgets/resizable_tabs.dart';
 import 'package:pixel32_t/features/panels/colors_panel/view/colors_panel.dart';
 import 'package:pixel32_t/features/panels/editor_panel/view/editor_panel.dart';
 import 'package:pixel32_t/features/panels/layers_panel/view/layers_panel.dart';
@@ -15,7 +15,7 @@ class HomeScreenView extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 32, child: Center(child: Text("TOP BAR"))),
+          SizedBox(height: 32, child: Center(child: Text("TODO: TOP BAR"))),
           Expanded(
             child: ResizableTabs(
               dividerSize: 16,
@@ -50,7 +50,7 @@ class HomeScreenView extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 24, child: Center(child: Text("BOTTOM BAR"))),
+          SizedBox(height: 24, child: Center(child: Text("TODO: BOTTOM BAR"))),
         ],
       ),
     );

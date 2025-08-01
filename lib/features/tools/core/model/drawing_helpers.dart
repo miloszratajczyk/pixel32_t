@@ -1,11 +1,14 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:pixel32_t/features/core/model/v2i.dart';
+import 'package:pixel32_t/core/model/v2i.dart';
 
+/// Converts an `Offset` to a `V2i` by rounding down the x and y coordinates
 extension OffsetToV2i on Offset {
   V2i toV2i() => V2i(dx.toInt(), dy.toInt());
 }
 
+/// Returns a list of `V2i` points forming a line between `start` and `end`
+/// using Bresenham's algorithm
 List<V2i> getLinePoints(V2i start, V2i end) {
   int x0 = start.x.toInt();
   int y0 = start.y.toInt();
@@ -41,6 +44,7 @@ List<V2i> getLinePoints(V2i start, V2i end) {
   return points;
 }
 
+/// Returns a list of `V2i` points that form the border of a rectangle defined by `a` and `b` points
 List<V2i> getRectangleBorderPoints(V2i a, V2i b) {
   final left = min(a.x, b.x);
   final right = max(a.x, b.x);
@@ -61,6 +65,7 @@ List<V2i> getRectangleBorderPoints(V2i a, V2i b) {
   return points;
 }
 
+/// Returns a list of `V2i` points that fill a rectangle defined by `a` and `b` points
 List<V2i> getRectangleFilledPoints(V2i a, V2i b) {
   final left = min(a.x, b.x);
   final right = max(a.x, b.x);
@@ -77,6 +82,7 @@ List<V2i> getRectangleFilledPoints(V2i a, V2i b) {
   return points;
 }
 
+/// Returns a list of `V2i` points that form the border of a circle defined by `center` and `edge` points
 List<V2i> getCircleBorderPoints(V2i center, V2i edge) {
   final points = <V2i>[];
 
@@ -118,6 +124,7 @@ List<V2i> getCircleBorderPoints(V2i center, V2i edge) {
   return points;
 }
 
+/// Returns a list of `V2i` points that fill a circle defined by `center` and `edge` points
 List<V2i> getCircleFilledPoints(V2i center, V2i edge) {
   final points = <V2i>[];
 
@@ -141,6 +148,7 @@ List<V2i> getCircleFilledPoints(V2i center, V2i edge) {
   return points;
 }
 
+/// Returns a list of `V2i` points that fill a circle defined by `radius`
 List<V2i> getCircleBrushShape(double radius) {
   if (radius <= 1) {
     return [V2i(0, 0)];
@@ -166,6 +174,7 @@ List<V2i> getCircleBrushShape(double radius) {
   return points;
 }
 
+/// Calculates the average channel-wise distance between two colors `a` and `b`
 double colorDistance(Color a, Color b) {
   return ((a.r - b.r).abs() +
           (a.g - b.g).abs() +
@@ -174,6 +183,7 @@ double colorDistance(Color a, Color b) {
       0.25;
 }
 
+/// Returns a list of `V2i` points that form the border of a polygon defined by `path` points
 List<V2i> getPolygonBorderPoints(List<V2i> path, {bool shouldClose = true}) {
   final points = <V2i>{};
   for (int i = 0; i < path.length - 1; i++) {
@@ -185,11 +195,11 @@ List<V2i> getPolygonBorderPoints(List<V2i> path, {bool shouldClose = true}) {
   return points.toList();
 }
 
-/// TODO I dont even know
+/// Returns a list of `V2i` points that fill a polygon defined by `path` points
+/// using the scanline algorithm
 List<V2i> scanlineFillPolygon(List<V2i> polygon) {
   if (polygon.length < 3) return [];
 
-  // Find min and max Y
   int minY = polygon.map((p) => p.y).reduce((a, b) => a < b ? a : b);
   int maxY = polygon.map((p) => p.y).reduce((a, b) => a > b ? a : b);
 

@@ -1,13 +1,16 @@
+/// Vector of 2 ints used as a `Point<int>` stand-in for performance
 final class V2i {
   const V2i(this.x, this.y);
 
   final int x;
   final int y;
 
+  /// Element-wise addition
   V2i operator +(V2i other) {
     return V2i(x + other.x, y + other.y);
   }
 
+  /// Element-wise substraction
   V2i operator -(V2i other) {
     return V2i(x - other.x, y - other.y);
   }

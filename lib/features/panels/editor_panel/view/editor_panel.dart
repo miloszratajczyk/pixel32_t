@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
 import 'package:pixel32_t/features/cloth/view/cloth_view.dart';
-import 'package:pixel32_t/features/core/view/widgets/transparency_pattern.dart';
+import 'package:pixel32_t/core/view/widgets/transparency_pattern.dart';
 import 'package:pixel32_t/features/panels/editor_panel/cubit/editor_panel_cubit.dart';
 import 'package:pixel32_t/features/selection_layer/widgets/selection_layer_overlay.dart';
 import 'package:pixel32_t/features/tools/cubit/tool_cubit.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:pixel32_t/features/core/view/style/app_colors.dart';
+import 'package:pixel32_t/core/view/style/app_colors.dart';
 import 'bs_button.dart';
 import 'bs_button_style.dart';
 

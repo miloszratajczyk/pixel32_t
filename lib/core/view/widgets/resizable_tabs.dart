@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ResizableTabs extends StatefulWidget {
+  /// Creates a Row or Column of widgets imitating `Flex` behavior at first, but
+  /// widgets inside can be resized by dragging the divider
   const ResizableTabs({
     super.key,
     this.axis = Axis.horizontal,
@@ -11,11 +13,21 @@ class ResizableTabs extends StatefulWidget {
     required this.children,
   });
 
+  /// The direction to use as the main axis
   final Axis axis;
+
+  /// Used for decidint the inital tabs sizes
   final List<int>? tabFlexes;
+
+  /// List of minimal sizes for tabs considered when resizing
   final List<double>? minTabSizes;
+
+  /// Width or height of the divider depending on `axis`
   final double dividerSize;
+
+  /// Widget put between every child
   final Widget divider;
+
   final List<Widget> children;
 
   @override

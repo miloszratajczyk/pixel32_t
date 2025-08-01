@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-// TODO: make the colors mare fitting and check all contrasts
-class AppColors {
+/// All colors used for styling the application
+final class AppColors {
   static const background = Color(0xff000000);
   static const foreground = Color(0xffffffff);
   static const primary = Color(0xffffc107);

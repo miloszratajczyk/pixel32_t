@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/model/cloth_layer.dart';
 import 'package:pixel32_t/features/cloth/model/supported_blend_modes.dart';
-import 'package:pixel32_t/features/core/view/style/app_colors.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button_style.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_dropdown_button.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_icon_button.dart';
+import 'package:pixel32_t/core/view/style/app_colors.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_button.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_button_style.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_dropdown_button.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_icon_button.dart';
 import 'package:pixel32_t/features/panels/layers_panel/cubit/layers_panel_cubit.dart';
 
 // TODO: Complete rework when new widget library is done
@@ -33,7 +33,7 @@ class LayersPanel extends StatelessWidget {
               for (int i = 0; i < layers.length; i++)
                 Padding(
                   key: layers[i].id,
-                  padding: EdgeInsets.only(right: 8.0),
+                  padding: EdgeInsets.only(right: 16.0),
                   child: LayerSettings(layers: layers, i: i, cubit: cubit),
                 ),
             ],
