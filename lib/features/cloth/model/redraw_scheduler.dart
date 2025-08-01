@@ -1,6 +1,7 @@
 import 'dart:async';
 
 class RedrawScheduler {
+  /// Throttle redraw requests
   RedrawScheduler({
     required this.onRedraw,
     this.frameDuration = const Duration(milliseconds: 16),

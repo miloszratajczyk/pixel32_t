@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
-import 'package:pixel32_t/features/core/model/v2i.dart';
+import 'package:pixel32_t/core/model/v2i.dart';
 import 'package:pixel32_t/features/selection_layer/selection_layer.dart';
 
 class SelectionCubit extends Cubit<SelectionLayer> {

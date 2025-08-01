@@ -2,7 +2,7 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:pixel32_t/features/core/model/v2i.dart';
+import 'package:pixel32_t/core/model/v2i.dart';
 
 final class SelectionLayer {
   final int width;

@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/repo/cloth_repository.dart';
-import 'package:pixel32_t/features/core/model/v2i.dart';
+import 'package:pixel32_t/core/model/v2i.dart';
 import 'package:pixel32_t/features/selection_layer/cubit/selection_cubit.dart';
 import 'package:pixel32_t/features/tools/circle_select_tool/view/circle_select_tool_settings_view.dart';
 import 'package:pixel32_t/features/tools/core/model/drawing_helpers.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-import 'package:pixel32_t/features/core/view/widgets/transparency_pattern.dart';
+import 'package:pixel32_t/core/view/widgets/transparency_pattern.dart';
 
 class ColorPicker extends StatefulWidget {
   final void Function(Color color) onColorSelected;

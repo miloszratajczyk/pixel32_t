@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pixel32_t/features/cloth/cubit/cloth_cubit.dart';
-import 'package:pixel32_t/features/core/view/widgets/bs_button/bs_button.dart';
+import 'package:pixel32_t/core/view/widgets/bs_button/bs_button.dart';
 import 'package:pixel32_t/features/panels/colors_panel/cubit/colors_panel_cubit.dart';
 import 'package:pixel32_t/features/panels/colors_panel/view/widgets/color_picker.dart';
 
